@@ -1,10 +1,12 @@
 package com.openclassrooms.safetynetalerts.model;
 
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Entity
 public class Person {
 	private String firstName;
 	private String lastName;
