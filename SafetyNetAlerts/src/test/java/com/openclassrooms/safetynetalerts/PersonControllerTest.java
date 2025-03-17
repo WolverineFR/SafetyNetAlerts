@@ -34,7 +34,7 @@ public class PersonControllerTest {
 		Person person = new Person(1, "John", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6512",
 				"jaboyd@email.com");
 
-		when(personService.getPersonById(1)).thenReturn(Optional.of(person));
+	//	when(personService.getPersonById(1)).thenReturn(Optional.of(person));
 
 		mockMvc.perform(get("/person/1").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().json(

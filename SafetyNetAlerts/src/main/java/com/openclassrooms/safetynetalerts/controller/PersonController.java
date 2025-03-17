@@ -12,6 +12,8 @@ import com.openclassrooms.safetynetalerts.service.PersonService;
 
 @RestController
 public class PersonController {
+	
+	/*
 
 	private final PersonService personService;
 
@@ -28,4 +30,6 @@ public class PersonController {
 	public Optional<Person> getPersonById(@PathVariable int id) {
 		return personService.getPersonById(id);
 	}
+	
+	*/
 }
