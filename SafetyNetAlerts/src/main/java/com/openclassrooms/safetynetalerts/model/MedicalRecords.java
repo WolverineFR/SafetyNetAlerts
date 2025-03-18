@@ -2,22 +2,28 @@ package com.openclassrooms.safetynetalerts.model;
 
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 @Entity
 public class MedicalRecords {
+	@NotBlank
 	private String firstName;
+	@NotBlank
 	private String lastName;
-	private String birthDate;
+	@NotBlank
+	private String birthdate;
 	private List<String> medications;
 	private List<String> allergies;
 
 	public MedicalRecords( String firstName, String lastName, String birthDate, List<String> medications, List<String> allergies) {
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.birthDate = birthDate;
+		this.birthdate = birthDate;
 		this.medications = medications;
 		this.allergies = allergies;
 	}
@@ -42,11 +48,11 @@ public class MedicalRecords {
 
 	// Getter and Setter for birth date
 	public String getBirthDate() {
-		return birthDate;
+		return birthdate;
 	}
 
 	public void setBirthDate(String birthDate) {
-		this.birthDate = birthDate;
+		this.birthdate = birthDate;
 	}
 
 	// Getter and Setter for medications

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
@@ -15,8 +16,13 @@ public class MedicalRecordsController {
 	@Autowired
 	private MedicalRecordsService medicalRecordsService;
 	
-	@GetMapping("/medicalrecords")
+	@GetMapping("/medicalrecord")
 	public List<MedicalRecords> getAllMedicalRecords() throws Exception {
 		return medicalRecordsService.getAllMedicalRecords();
+	}
+	
+	@PostMapping("medicalrecord")
+	public MedicalRecords saveNewMedicalrecord() throws Exception {
+		return medicalRecordsService.addMedicalRecord();
 	}
 }
