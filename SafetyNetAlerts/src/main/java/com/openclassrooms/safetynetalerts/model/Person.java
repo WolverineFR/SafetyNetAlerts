@@ -8,11 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Entity
-@AllArgsConstructor
 public class Person {
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+ 
 	private String firstName;
 	private String lastName;
 	private String address;
@@ -21,8 +18,7 @@ public class Person {
 	private String phone;
 	private String email;
 	
-	public Person(int id, String firstName,String lastName,String address, String city, String zip, String phone, String email) {
-		this.id = id;
+	public Person(String firstName,String lastName,String address, String city, String zip, String phone, String email) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.address = address;
@@ -31,14 +27,6 @@ public class Person {
 		this.phone = phone;
 		this.email = email;
 	}
-	// Getter and Setter for ID
-	public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     // Getter and Setter for firstName
     public String getFirstName() {
@@ -103,5 +91,4 @@ public class Person {
         this.email = email;
     }
     
-    public Person() {}
 }

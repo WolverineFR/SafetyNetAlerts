@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.service.MedicalRecordsService;
 
+import ch.qos.logback.core.model.Model;
 import jakarta.validation.Valid;
 
 @RestController
@@ -41,15 +42,17 @@ public class MedicalRecordsController {
 
 	}
 
-	@PutMapping("medicalrecord/{firstname}/{lastname}")
-	public ResponseEntity<?> updateMedicalRecord(@PathVariable String firstName, @PathVariable String lastName, @RequestBody MedicalRecords updatedMedicalRecord) throws Exception {
-		MedicalRecords updateMedicalRecord = medicalRecordsService.updateMedicalRecord(firstName, lastName, updatedMedicalRecord);
-		
-		if (updateMedicalRecord != null) {
-			return ResponseEntity.ok(updateMedicalRecord);
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dossier medical non trouvé");
+	@PutMapping("/medicalrecord/{firstName}/{lastName}")
+	public ResponseEntity<String> updateMedicalRecord (@PathVariable String firstName, @PathVariable String lastName, MedicalRecords updateMedicalRecord) {
+		try {
+			medicalRecordsService.updateMedicalrecords(updateMedicalRecord);
+			return ResponseEntity.status(HttpStatus.OK).body("Modification enregistré avec succeès !");
+			
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la modification: " + e.getMessage());
 		}
-
+		
+		
 	}
+	
 }

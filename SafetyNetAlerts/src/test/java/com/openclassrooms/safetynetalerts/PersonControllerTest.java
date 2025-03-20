@@ -31,7 +31,7 @@ public class PersonControllerTest {
 
 	@Test
 	public void testGetPersonById() throws Exception {
-		Person person = new Person(1, "John", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6512",
+		Person person = new Person( "John", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6512",
 				"jaboyd@email.com");
 
 	//	when(personService.getPersonById(1)).thenReturn(Optional.of(person));

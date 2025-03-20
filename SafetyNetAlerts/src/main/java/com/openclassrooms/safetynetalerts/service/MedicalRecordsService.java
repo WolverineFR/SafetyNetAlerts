@@ -31,6 +31,7 @@ public class MedicalRecordsService {
 		this.jsonFile = jsonFile;
 	}
 
+	// Recuperer tout les MedicalRecords
 	public List<MedicalRecords> getAllMedicalRecords() throws Exception {
 		jsonFilePath = jsonFile.getJsonFile();
 		InputStream in = getClass().getResourceAsStream("/" + jsonFilePath);
@@ -48,50 +49,54 @@ public class MedicalRecordsService {
 			throw new RuntimeException("Erreur lors de la lecture du fichier JSON", e);
 		}
 	}
+	
+	// Sauvegarder un medical record en json
+		private void saveMedicalRecordsToJson(List<MedicalRecords> allMedicalRecordsList) throws Exception {
+			jsonFilePath = jsonFile.getJsonFile();
+			JsonObject medicalrecordsJson = new JsonObject();
+			medicalrecordsJson.add("medicalrecords", gson.toJsonTree(allMedicalRecordsList));
 
+			try (FileWriter fileWriter = new FileWriter(getClass().getResource("/" + jsonFilePath).getFile())) {
+				gson.toJson(medicalrecordsJson, fileWriter);
+			} catch (Exception e) {
+				throw new RuntimeException("Erreur lors de la sauvegarde des données dans le fichier JSON");
+			}
+		}
+
+	// Ajouter un MedicalRecord
 	public void addMedicalRecord(MedicalRecords newMedicalRecords) throws Exception {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 
-		allMedicalRecordsList.add(newMedicalRecords);
-
-		jsonFilePath = jsonFile.getJsonFile();
-		FileWriter fileWriter = new FileWriter(getClass().getResource("/" + jsonFilePath).getFile());
-		JsonObject medicalrecordsJson = new JsonObject();
-		medicalrecordsJson.add("medicalrecords", gson.toJsonTree(allMedicalRecordsList));
-
 		try {
-			gson.toJson(medicalrecordsJson, fileWriter);
-			fileWriter.close();
+			allMedicalRecordsList.add(newMedicalRecords);
+			saveMedicalRecordsToJson(allMedicalRecordsList);
 		} catch (JsonSyntaxException e) {
 			throw new RuntimeException("Erreur lors de l'envoie vers le fichier JSON", e);
 		}
-
 	}
+
 	
-	private void saveMedicalRecordsToJson(List<MedicalRecords> allMedicalRecordsList) throws Exception {
-	    String jsonFilePath = jsonFile.getJsonFile();
-	    FileWriter writer = new FileWriter(getClass().getResource("/" + jsonFilePath).getFile()); 
-	    
-	    gson.toJson(allMedicalRecordsList, writer);
-	    writer.flush();
-	    writer.close();
-	}
-
-	public MedicalRecords updateMedicalRecord(String firstName, String lastName, MedicalRecords updateMedicalRecords) throws Exception {
+	// Mise à jour des données
+	public MedicalRecords updateMedicalrecords(MedicalRecords updateMedicalRecord) throws Exception {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
-		
-		for (MedicalRecords record : allMedicalRecordsList) {
-			if (record.getFirstName().equalsIgnoreCase(firstName) && record.getLastName().equalsIgnoreCase(lastName)) {
-				record.setBirthDate(updateMedicalRecords.getBirthDate());
-				record.setMedications(updateMedicalRecords.getMedications());
-				record.setAllergies(updateMedicalRecords.getAllergies());
-				
-				saveMedicalRecordsToJson(allMedicalRecordsList);
-				
-				return record;
+		boolean isUpdated = false;
+
+		for (int i = 0; i < allMedicalRecordsList.size(); i++) {
+			MedicalRecords mr = allMedicalRecordsList.get(i);
+			if (mr.getFirstName().equalsIgnoreCase(updateMedicalRecord.getFirstName())
+					&& mr.getLastName().equalsIgnoreCase(updateMedicalRecord.getLastName())) {
+				allMedicalRecordsList.set(i, updateMedicalRecord);
+				isUpdated = true;
+				break;
 			}
 		}
-		return null;
-
+		
+		if (isUpdated) {
+			saveMedicalRecordsToJson(allMedicalRecordsList);
+			return updateMedicalRecord;
+		} else {
+			throw new RuntimeException("Les données sont incorrect");
+		}
 	}
+	
 }

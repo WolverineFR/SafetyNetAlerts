@@ -2,8 +2,6 @@ package com.openclassrooms.safetynetalerts.model;
 
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
-
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
