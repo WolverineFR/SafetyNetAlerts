@@ -77,7 +77,7 @@ public class MedicalRecordsService {
 
 	
 	// Mise à jour des données
-	public MedicalRecords updateMedicalrecords(MedicalRecords updateMedicalRecord) throws Exception {
+	public MedicalRecords updateMedicalRecord(MedicalRecords updateMedicalRecord) throws Exception {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 		boolean isUpdated = false;
 
@@ -94,6 +94,28 @@ public class MedicalRecordsService {
 		if (isUpdated) {
 			saveMedicalRecordsToJson(allMedicalRecordsList);
 			return updateMedicalRecord;
+		} else {
+			throw new RuntimeException("Les données sont incorrect");
+		}
+	}
+	
+	//Supression d'un medical record
+	public MedicalRecords deleteMedicalRecord(MedicalRecords deleteMedicalRecord) throws Exception {
+		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
+		boolean isUpdated = false;
+		
+		for (int i = 0; i < allMedicalRecordsList.size(); i++) {
+			MedicalRecords mr = allMedicalRecordsList.get(i);
+			if (mr.getFirstName().equalsIgnoreCase(deleteMedicalRecord.getFirstName()) && mr.getLastName().equalsIgnoreCase(deleteMedicalRecord.getLastName())) {
+				allMedicalRecordsList.remove(i);
+				isUpdated = true;
+				break;
+			}
+		}
+		
+		if (isUpdated) {
+			saveMedicalRecordsToJson(allMedicalRecordsList);
+			return deleteMedicalRecord;
 		} else {
 			throw new RuntimeException("Les données sont incorrect");
 		}

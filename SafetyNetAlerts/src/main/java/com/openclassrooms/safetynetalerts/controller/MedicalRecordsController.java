@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,7 @@ public class MedicalRecordsController {
 		return medicalRecordsService.getAllMedicalRecords();
 	}
 
-	@PostMapping("medicalrecord")
+	@PostMapping("/medicalrecord")
 	public ResponseEntity<String> addNewMedicalrecord(@Valid @RequestBody MedicalRecords newMedicalRecords) {
 
 		try {
@@ -43,15 +44,27 @@ public class MedicalRecordsController {
 	}
 
 	@PutMapping("/medicalrecord/{firstName}/{lastName}")
-	public ResponseEntity<String> updateMedicalRecord (@PathVariable String firstName, @PathVariable String lastName, MedicalRecords updateMedicalRecord) {
+	public ResponseEntity<String> updateMedicalRecord (@PathVariable String firstName, @PathVariable String lastName,@RequestBody MedicalRecords updateMedicalRecord) {
 		try {
-			medicalRecordsService.updateMedicalrecords(updateMedicalRecord);
+			medicalRecordsService.updateMedicalRecord(updateMedicalRecord);
 			return ResponseEntity.status(HttpStatus.OK).body("Modification enregistré avec succeès !");
 			
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la modification: " + e.getMessage());
 		}
 		
+		
+	}
+	
+	@DeleteMapping("/medicalrecord/{firstName}/{lastName}")
+	public ResponseEntity<String> deleteMedicalRecord (@PathVariable String firstName, @PathVariable String lastName, MedicalRecords deleteMedicalRecord) {
+		try {
+			medicalRecordsService.deleteMedicalRecord(deleteMedicalRecord);
+			return ResponseEntity.status(HttpStatus.OK).body("Le dossier medical a bien été supprimé");
+			
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression: " + e.getMessage());
+		}
 		
 	}
 	
