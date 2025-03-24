@@ -2,6 +2,8 @@ package com.openclassrooms.safetynetalerts.controller;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +15,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.service.MedicalRecordsService;
 
-import ch.qos.logback.core.model.Model;
 import jakarta.validation.Valid;
 
 @RestController
@@ -25,47 +27,36 @@ public class MedicalRecordsController {
 	@Autowired
 	private MedicalRecordsService medicalRecordsService;
 
+	private static final Logger logger = LogManager.getLogger(MedicalRecordsService.class);
+	Gson gson = new Gson();
+
 	@GetMapping("/medicalrecord")
 	public List<MedicalRecords> getAllMedicalRecords() throws Exception {
 		return medicalRecordsService.getAllMedicalRecords();
 	}
 
 	@PostMapping("/medicalrecord")
-	public ResponseEntity<String> addNewMedicalrecord(@Valid @RequestBody MedicalRecords newMedicalRecords) {
-
-		try {
-			medicalRecordsService.addMedicalRecord(newMedicalRecords);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Rapport medical enregistré avec succès !");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Erreur lors de l'ajout du rapport médical: " + e.getMessage());
-		}
-
+	public MedicalRecords addNewMedicalrecord(@Valid @RequestBody MedicalRecords newMedicalRecords) throws Exception {
+		medicalRecordsService.addMedicalRecord(newMedicalRecords);
+		logger.info("Rapport medical enregistré avec succès ! : " + gson.toJson(newMedicalRecords));
+		return newMedicalRecords;
 	}
 
 	@PutMapping("/medicalrecord/{firstName}/{lastName}")
-	public ResponseEntity<String> updateMedicalRecord (@PathVariable String firstName, @PathVariable String lastName,@RequestBody MedicalRecords updateMedicalRecord) {
-		try {
-			medicalRecordsService.updateMedicalRecord(updateMedicalRecord);
-			return ResponseEntity.status(HttpStatus.OK).body("Modification enregistré avec succeès !");
-			
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la modification: " + e.getMessage());
-		}
-		
-		
+	public MedicalRecords updateMedicalRecord(@Valid @PathVariable String firstName, @PathVariable String lastName,
+			@Valid @RequestBody MedicalRecords updateMedicalRecord) throws Exception {
+		medicalRecordsService.updateMedicalRecord(updateMedicalRecord);
+		logger.info("Rapport medical modifié avec succès ! : " + gson.toJson(updateMedicalRecord));
+		return updateMedicalRecord;
 	}
-	
+
 	@DeleteMapping("/medicalrecord/{firstName}/{lastName}")
-	public ResponseEntity<String> deleteMedicalRecord (@PathVariable String firstName, @PathVariable String lastName, MedicalRecords deleteMedicalRecord) {
-		try {
-			medicalRecordsService.deleteMedicalRecord(deleteMedicalRecord);
-			return ResponseEntity.status(HttpStatus.OK).body("Le dossier medical a bien été supprimé");
-			
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression: " + e.getMessage());
-		}
-		
+	public MedicalRecords deleteMedicalRecord(@Valid @PathVariable String firstName, @PathVariable String lastName,
+			MedicalRecords deleteMedicalRecord) throws Exception {
+		medicalRecordsService.deleteMedicalRecord(deleteMedicalRecord);
+		logger.info("Rapport medical supprimé avec succès ! : " + gson.toJson(deleteMedicalRecord));
+		return deleteMedicalRecord;
+
 	}
-	
+
 }
