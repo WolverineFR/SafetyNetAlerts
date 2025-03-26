@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
+import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
+import com.openclassrooms.safetynetalerts.dto.PersonFireStationDTO;
 import com.openclassrooms.safetynetalerts.model.FireStation;
 import com.openclassrooms.safetynetalerts.service.FireStationService;
+import com.openclassrooms.safetynetalerts.service.PersonService;
 
 import jakarta.validation.Valid;
 
@@ -24,11 +28,14 @@ public class FireStationController {
 
 	@Autowired
 	private FireStationService fireStationService;
+	private PersonFireStationDTO fireStationNumberDTO;
+	private PersonService personService;
+
 
 	private static final Logger logger = LogManager.getLogger(FireStationService.class);
 	Gson gson = new Gson();
 
-	@GetMapping("/firestation")
+	@GetMapping("/firestation/all")
 	public List<FireStation> getAllFireStation() throws Exception {
 		return fireStationService.getAllFireStation();
 	}
@@ -56,5 +63,10 @@ public class FireStationController {
 		return deleteFireStation;
 
 	}
+	
+	@GetMapping("/firestation")
+    public FireStationCoverageDTO getPersonsByStationNumber(@RequestParam int stationNumber) throws Exception {
+        return fireStationService.getPersonsByStationNumber(stationNumber);
+    }
 
 }

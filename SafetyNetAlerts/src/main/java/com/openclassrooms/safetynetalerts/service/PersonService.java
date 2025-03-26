@@ -94,4 +94,10 @@ public class PersonService {
 			throw new RuntimeException("Cette personne n'existe pas");
 		}
 	}
+	
+/*	public int calculateAge(Person person) {
+		person.
+		return 0;
+	}
+	*/
 }
