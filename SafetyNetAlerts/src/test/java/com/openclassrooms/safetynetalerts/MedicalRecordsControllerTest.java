@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,8 +38,9 @@ public class MedicalRecordsControllerTest {
 	public void addNewMedicalRecordTest() throws Exception {
 		List<String> medications = Arrays.asList("doliprane");
 		List<String> allergies = Arrays.asList("pollen");
+		String birthdate = "01/01/1990";
 
-		MedicalRecords addNewMedicalRecord = new MedicalRecords("Jean", "Martin", "01/01/1990", medications, allergies);
+		MedicalRecords addNewMedicalRecord = new MedicalRecords("Jean", "Martin", birthdate, medications, allergies);
 
 		doNothing().when(medicalRecordsService).addMedicalRecord(any(MedicalRecords.class));
 
@@ -52,8 +54,9 @@ public class MedicalRecordsControllerTest {
 	public void updateMedicalRecordTest() throws Exception {
 		List<String> medications = Arrays.asList("toplexil");
 		List<String> allergies = Arrays.asList("gluten");
+		String birthdate = "01/01/1990";
 
-		MedicalRecords updateMedicalRecord = new MedicalRecords("Jean", "Martin", "01/01/1990", medications, allergies);
+		MedicalRecords updateMedicalRecord = new MedicalRecords("Jean", "Martin", birthdate, medications, allergies);
 
 		when(medicalRecordsService.updateMedicalRecord(any(MedicalRecords.class))).thenReturn(updateMedicalRecord);
 
@@ -66,10 +69,11 @@ public class MedicalRecordsControllerTest {
 	public void deleteMedicalRecordTest() throws Exception {
 		List<String> medications = Arrays.asList("toplexil");
 		List<String> allergies = Arrays.asList("gluten");
+		String birthdate = "01/01/1990";
 		String firstName = "Jean";
 		String lastName = "Martin";
 
-		MedicalRecords deleteMedicalRecord = new MedicalRecords("Jean", "Martin", "01/01/1990", medications, allergies);
+		MedicalRecords deleteMedicalRecord = new MedicalRecords("Jean", "Martin", birthdate, medications, allergies);
 		;
 
 		when(medicalRecordsService.deleteMedicalRecord(deleteMedicalRecord)).thenReturn(deleteMedicalRecord);

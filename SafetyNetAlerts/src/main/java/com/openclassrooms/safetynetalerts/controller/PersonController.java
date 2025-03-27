@@ -29,7 +29,7 @@ public class PersonController {
 	private static final Logger logger = LogManager.getLogger(PersonService.class);
 	Gson gson = new Gson();
 
-	@GetMapping("/person")
+	@GetMapping("/person/all")
 	public List<Person> getAllPerson() throws Exception {
 		return PersonService.getAllPerson();
 	}

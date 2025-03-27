@@ -1,6 +1,8 @@
 package com.openclassrooms.safetynetalerts.service;
 
 import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +16,7 @@ import com.openclassrooms.safetynetalerts.CustomProperties;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonFireStationDTO;
 import com.openclassrooms.safetynetalerts.model.FireStation;
+import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.model.Person;
 
 @Service
@@ -22,14 +25,17 @@ public class FireStationService {
 	@Autowired
 	private final CustomProperties jsonFile;
 	private final PersonService personService;
+	private final MedicalRecordsService medicalRecordsService;
 
 	private JsonService jsonService;
 	private static String category = "firestations";
 
-	public FireStationService(PersonService personService, CustomProperties jsonFile, JsonService jsonService) {
+	public FireStationService(MedicalRecordsService medicalRecordsService, PersonService personService,
+			CustomProperties jsonFile, JsonService jsonService) {
 		this.jsonFile = jsonFile;
 		this.jsonService = jsonService;
 		this.personService = personService;
+		this.medicalRecordsService = medicalRecordsService;
 	}
 
 	// Recuperer toutes les FireStation
@@ -101,7 +107,7 @@ public class FireStationService {
 		}
 	}
 
-	//Recuperer les person par numero de station
+	// Recuperer les person par numero de station
 	public FireStationCoverageDTO getPersonsByStationNumber(int stationNumber) throws Exception {
 		List<FireStation> allFireStationList = getAllFireStation();
 
@@ -110,18 +116,26 @@ public class FireStationService {
 				.collect(Collectors.toList());
 
 		List<Person> persons = personService.getAllPerson();
+		List<MedicalRecords> medicalRecords = medicalRecordsService.getAllMedicalRecords();
 		List<PersonFireStationDTO> filteredPersons = new ArrayList<>();
+
 		int numberOfAdults = 0;
 		int numberOfChildren = 0;
 
 		for (Person person : persons) {
 			if (coveredAddresses.contains(person.getAddress())) {
+				for (MedicalRecords medicalRecord : medicalRecords) {
+					if (person.getFirstName().equals(medicalRecord.getFirstName())
+							&& person.getLastName().equals(medicalRecord.getLastName())) {
 
-				int age = 18; // calculateAge(person);
-				if (age <= 18) {
-					numberOfChildren++;
-				} else {
-					numberOfAdults++;
+						int age = medicalRecordsService.calculateAge(medicalRecord);
+						if (age <= 18) {
+							numberOfChildren++;
+						} else {
+							numberOfAdults++;
+						}
+
+					}
 				}
 
 				filteredPersons.add(new PersonFireStationDTO(person.getFirstName(), person.getLastName(),

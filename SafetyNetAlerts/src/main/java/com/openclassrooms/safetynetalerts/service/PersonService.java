@@ -95,9 +95,5 @@ public class PersonService {
 		}
 	}
 	
-/*	public int calculateAge(Person person) {
-		person.
-		return 0;
-	}
-	*/
+	
 }

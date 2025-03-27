@@ -1,9 +1,11 @@
 package com.openclassrooms.safetynetalerts.dto;
 
-public class PersonDTO {
+import java.util.List;
 
-	private String firstName;
-	private String lastName;
-	private String address;
-	private String phone;
+public record PersonDTO(String firstName, String lastName, String birthdate, String address,
+
+		String city, String zip, String phone, String email, List<String> medications, List<String> allergies
+
+) {
+
 }

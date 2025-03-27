@@ -1,6 +1,9 @@
 package com.openclassrooms.safetynetalerts.service;
 
 import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +97,14 @@ public class MedicalRecordsService {
 		} else {
 			throw new RuntimeException("Ce rapport medical n'existe pas");
 		}
+	}
+	
+	public int calculateAge(MedicalRecords medicalRecords) {
+		 String birthDate = medicalRecords.getBirthDate();
+		 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyy");
+		 LocalDate birthLocalDate = LocalDate.parse(birthDate, formatter);
+		
+		return Period.between(birthLocalDate, LocalDate.now()).getYears();
 	}
 
 }
