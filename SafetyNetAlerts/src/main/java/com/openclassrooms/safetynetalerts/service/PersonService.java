@@ -11,6 +11,8 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.safetynetalerts.CustomProperties;
 import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
+import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
+import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.model.Person;
 
 @Service
@@ -21,11 +23,14 @@ public class PersonService {
 	private JsonService jsonService;
 	private static String category = "persons";
 
-	public PersonService(CustomProperties jsonFile, JsonService jsonService) {
+	private final MedicalRecordsService medicalRecordsService;
+
+	public PersonService(MedicalRecordsService medicalRecordsService, CustomProperties jsonFile,
+			JsonService jsonService) {
 		this.jsonFile = jsonFile;
 		this.jsonService = jsonService;
+		this.medicalRecordsService = medicalRecordsService;
 	}
-	
 
 	// Recuperer toutes les personnes
 	public List<Person> getAllPerson() throws Exception {
@@ -35,8 +40,8 @@ public class PersonService {
 	}
 
 	// Sauvegarder un medical record en json
-	private void savePersonToJson(List<Person> allPersonList){
-	jsonService.writeJsonToFile( category, allPersonList);
+	private void savePersonToJson(List<Person> allPersonList) {
+		jsonService.writeJsonToFile(category, allPersonList);
 	}
 
 	// Ajouter un Person
@@ -96,20 +101,43 @@ public class PersonService {
 			throw new RuntimeException("Cette personne n'existe pas");
 		}
 	}
-	
+
+	// Recuperer les infos des personnes par leurs nom
+	public List<PersonInfoLastNameDTO> getPersonInfoByLastName(String lastName) throws Exception {
+		List<Person> getAllPerson = getAllPerson();
+		List<MedicalRecords> getAllMedicalRecords = medicalRecordsService.getAllMedicalRecords();
+
+		List<PersonInfoLastNameDTO> filteredPersons = new ArrayList<>();
+
+		for (Person person : getAllPerson) {
+			if (lastName.equals(person.getLastName())) {
+				for (MedicalRecords medicalRecord : getAllMedicalRecords) {
+					if (person.getLastName().equals(medicalRecord.getLastName())) {
+						int age = medicalRecordsService.calculateAge(medicalRecord);
+						filteredPersons.add(new PersonInfoLastNameDTO(person.getLastName(), person.getAddress(), age,
+								person.getEmail(), medicalRecord.getMedications(), medicalRecord.getAllergies()));
+						break;
+					}
+				}
+			}
+		}
+
+		return filteredPersons;
+	}
+
 	// Recuperer email de chaques habitants
 	public EmailOfAllPersonDTO getEmailOfAllPersonByCity(String city) throws Exception {
 		List<Person> getAllPerson = getAllPerson();
-		
+
 		List<String> filteredPersons = new ArrayList<>();
-		
+
 		for (Person person : getAllPerson) {
 			if (city.contains(person.getCity())) {
 				filteredPersons.add(person.getEmail());
 			}
 		}
-		
+
 		return new EmailOfAllPersonDTO(filteredPersons);
 	}
-	
+
 }
