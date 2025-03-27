@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
+import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.model.Person;
 import com.openclassrooms.safetynetalerts.service.PersonService;
 
@@ -56,6 +58,12 @@ public class PersonController {
 		logger.info("Personne supprimé avec succès ! : " + gson.toJson(deletePerson));
 		return deletePerson;
 
+	}
+	
+	@GetMapping("/communityEmail")
+	public EmailOfAllPersonDTO getEmailOfAllPersonByCity(@RequestParam String city) throws Exception {
+		return PersonService.getEmailOfAllPersonByCity(city);
+		
 	}
 
 }

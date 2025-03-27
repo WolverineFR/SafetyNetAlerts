@@ -1,6 +1,7 @@
 package com.openclassrooms.safetynetalerts.service;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.safetynetalerts.CustomProperties;
+import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.model.Person;
 
 @Service
@@ -95,5 +97,19 @@ public class PersonService {
 		}
 	}
 	
+	// Recuperer email de chaques habitants
+	public EmailOfAllPersonDTO getEmailOfAllPersonByCity(String city) throws Exception {
+		List<Person> getAllPerson = getAllPerson();
+		
+		List<String> filteredPersons = new ArrayList<>();
+		
+		for (Person person : getAllPerson) {
+			if (city.contains(person.getCity())) {
+				filteredPersons.add(person.getEmail());
+			}
+		}
+		
+		return new EmailOfAllPersonDTO(filteredPersons);
+	}
 	
 }
