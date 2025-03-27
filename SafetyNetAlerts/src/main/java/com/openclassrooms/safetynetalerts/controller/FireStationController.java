@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
+import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonFireStationDTO;
 import com.openclassrooms.safetynetalerts.model.FireStation;
 import com.openclassrooms.safetynetalerts.service.FireStationService;
@@ -68,5 +69,10 @@ public class FireStationController {
     public FireStationCoverageDTO getPersonsByStationNumber(@RequestParam int stationNumber) throws Exception {
         return fireStationService.getPersonsByStationNumber(stationNumber);
     }
+	
+	@GetMapping("/phoneAlert")
+	public FireStationCoveragePhoneNumberDTO getPhoneNumberByStationNumber(@RequestParam int firestation) throws Exception {
+		return fireStationService.getPhoneNumberByStationNumber(firestation);
+	}
 
 }

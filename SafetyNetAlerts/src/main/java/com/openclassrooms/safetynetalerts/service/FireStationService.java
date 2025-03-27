@@ -14,6 +14,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.safetynetalerts.CustomProperties;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
+import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonFireStationDTO;
 import com.openclassrooms.safetynetalerts.model.FireStation;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
@@ -143,6 +144,25 @@ public class FireStationService {
 			}
 		}
 		return new FireStationCoverageDTO(filteredPersons, numberOfAdults, numberOfChildren);
+	}
+
+	// recuperer les personnes par leurs numero de telephone
+	public FireStationCoveragePhoneNumberDTO getPhoneNumberByStationNumber(int stationNumber) throws Exception {
+		List<FireStation> allFireStationList = getAllFireStation();
+
+		List<String> coveredAddresses = allFireStationList.stream()
+				.filter(fireStation -> fireStation.getStation() == stationNumber).map(FireStation::getAddress)
+				.collect(Collectors.toList());
+
+		List<Person> persons = personService.getAllPerson();
+		List<String> filteredPersons = new ArrayList<>();
+
+		for (Person person : persons) {
+			if (coveredAddresses.contains(person.getAddress())) {
+				filteredPersons.add(person.getPhone());
+			}
+		}
+		return new FireStationCoveragePhoneNumberDTO(filteredPersons);
 	}
 
 }
