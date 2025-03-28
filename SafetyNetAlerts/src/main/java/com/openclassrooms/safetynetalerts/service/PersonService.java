@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.safetynetalerts.CustomProperties;
+import com.openclassrooms.safetynetalerts.dto.ChildByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
@@ -100,6 +101,36 @@ public class PersonService {
 		} else {
 			throw new RuntimeException("Cette personne n'existe pas");
 		}
+	}
+
+	// Recuperer liste d'enfants par leurs adresse
+	public List<ChildByAddressDTO> getChildrenByAddress(String address) throws Exception {
+		List<Person> getAllPerson = getAllPerson();
+		List<MedicalRecords> getAllMedicalRecords = medicalRecordsService.getAllMedicalRecords();
+
+		List<ChildByAddressDTO> filteredPersons = new ArrayList<>();
+		List<String> familyMembers = new ArrayList<>();
+
+		for (Person person : getAllPerson) {
+			if (address.contains(person.getAddress())) {
+				for (MedicalRecords medicalRecord : getAllMedicalRecords) {
+					if (person.getFirstName().equals(medicalRecord.getFirstName())
+							&& person.getLastName().equals(medicalRecord.getLastName())) {
+						if (person.getLastName().equals(medicalRecord.getLastName())) {
+							familyMembers.add(medicalRecord.getFirstName() + " " + medicalRecord.getLastName());
+						}
+						int age = medicalRecordsService.calculateAge(medicalRecord);
+						if (age <= 18) {
+							
+							filteredPersons.add(new ChildByAddressDTO(person.getFirstName(), person.getLastName(), age,
+									familyMembers));
+						}
+					}
+				}
+			}
+		}
+
+		return filteredPersons;
 	}
 
 	// Recuperer les infos des personnes par leurs nom

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
+import com.openclassrooms.safetynetalerts.dto.ChildByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
 import com.openclassrooms.safetynetalerts.model.Person;
@@ -59,6 +60,11 @@ public class PersonController {
 		logger.info("Personne supprimé avec succès ! : " + gson.toJson(deletePerson));
 		return deletePerson;
 
+	}
+	
+	@GetMapping("childAlert")
+	public List<ChildByAddressDTO> getChildrenByAddress(String address) throws Exception {
+		return PersonService.getChildrenByAddress(address);
 	}
 	
 	@GetMapping("/personInfo")
