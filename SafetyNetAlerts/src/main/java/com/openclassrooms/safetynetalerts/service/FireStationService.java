@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.openclassrooms.safetynetalerts.CustomProperties;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
+import com.openclassrooms.safetynetalerts.dto.PersonByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonFireStationDTO;
 import com.openclassrooms.safetynetalerts.model.FireStation;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
@@ -165,4 +166,33 @@ public class FireStationService {
 		return new FireStationCoveragePhoneNumberDTO(filteredPersons);
 	}
 
+	// Recuperer les personnes par adresse avec numero de station
+	public List<PersonByAddressDTO> getPersonByAddress(String address) throws Exception {
+		List<FireStation> allFireStationList = getAllFireStation();
+		List<Person> getAllPerson = personService.getAllPerson();
+		List<MedicalRecords> getAllMedicalRecords = medicalRecordsService.getAllMedicalRecords();
+
+		List<PersonByAddressDTO> filteredPersons = new ArrayList<>();
+
+		for (Person person : getAllPerson) {
+			if (address.contains(person.getAddress())) {
+				for (MedicalRecords medicalRecord : getAllMedicalRecords) {
+					if (person.getFirstName().equals(medicalRecord.getFirstName())
+							&& person.getLastName().equals(medicalRecord.getLastName())) {
+						for (FireStation fireStation : allFireStationList) {
+							if (person.getAddress().contains(fireStation.getAddress())) {
+								int age = medicalRecordsService.calculateAge(medicalRecord);
+
+								filteredPersons.add(new PersonByAddressDTO(fireStation.getStation(),
+										person.getFirstName(), person.getLastName(),person.getPhone(), age,
+										medicalRecord.getMedications(), medicalRecord.getAllergies()));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return filteredPersons;
+	}
 }
