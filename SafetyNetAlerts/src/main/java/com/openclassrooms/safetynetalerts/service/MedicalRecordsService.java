@@ -1,39 +1,29 @@
 package com.openclassrooms.safetynetalerts.service;
 
-import java.lang.reflect.Type;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import com.openclassrooms.safetynetalerts.CustomProperties;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 
 @Service
 public class MedicalRecordsService {
 
-	@Autowired
-	private final CustomProperties jsonFile;
-
 	private JsonService jsonService;
 	private static String category = "medicalrecords";
 
-	public MedicalRecordsService(CustomProperties jsonFile, JsonService jsonService) {
-		this.jsonFile = jsonFile;
+	public MedicalRecordsService(JsonService jsonService) {
 		this.jsonService = jsonService;
 	}
 
 	// Recuperer tout les MedicalRecords
 	public List<MedicalRecords> getAllMedicalRecords() throws Exception {
-		Type listType = new TypeToken<List<MedicalRecords>>() {
-		}.getType();
-		return jsonService.readJsonFromFile(listType, category);
+		return jsonService.readJsonFromFile(new TypeReference<List<MedicalRecords>>() {}, category);
 	}
 
 	// Sauvegarder un medical record en json
@@ -44,13 +34,8 @@ public class MedicalRecordsService {
 	// Ajouter un MedicalRecord
 	public void addMedicalRecord(MedicalRecords newMedicalRecords) throws Exception {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
-
-		try {
 			allMedicalRecordsList.add(newMedicalRecords);
 			saveMedicalRecordsToJson(allMedicalRecordsList);
-		} catch (JsonSyntaxException e) {
-			throw new RuntimeException("Erreur lors de l'envoie vers le fichier JSON", e);
-		}
 	}
 
 	// Mise à jour des données

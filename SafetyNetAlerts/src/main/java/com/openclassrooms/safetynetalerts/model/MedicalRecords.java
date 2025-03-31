@@ -2,6 +2,9 @@ package com.openclassrooms.safetynetalerts.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -12,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@JsonPropertyOrder({ "firstName", "lastName", "birthdate", "medications", "allergies" })
 public class MedicalRecords {
 	
 	@NotBlank(message = "Ce champ est requis et ne peux pas être vide")
@@ -20,16 +24,18 @@ public class MedicalRecords {
 	@NotBlank(message = "Ce champ est requis et ne peux pas être vide")
 	private String lastName;
 	
-	@NotBlank(message = "Ce champ est requis et ne peux pas être vide")
-	private String birthdate;
+	@JsonProperty("birthdate")
+	private String birthDate;
 	
 	private List<String> medications;
 	private List<String> allergies;
+	
+	public MedicalRecords () {}
 
 	public MedicalRecords( String firstName, String lastName, String birthDate, List<String> medications, List<String> allergies) {
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.birthdate = birthDate;
+		this.birthDate = birthDate;
 		this.medications = medications;
 		this.allergies = allergies;
 	}
@@ -54,11 +60,11 @@ public class MedicalRecords {
 
 	// Getter and Setter for birth date
 	public String getBirthDate() {
-		return birthdate;
+		return birthDate;
 	}
 
 	public void setBirthDate(String birthDate) {
-		this.birthdate = birthDate;
+		this.birthDate = birthDate;
 	}
 
 	// Getter and Setter for medications

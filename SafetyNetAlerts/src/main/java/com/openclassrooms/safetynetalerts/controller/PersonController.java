@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.safetynetalerts.dto.ChildByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
@@ -27,55 +28,62 @@ import jakarta.validation.Valid;
 @RestController
 public class PersonController {
 	
-	@Autowired
-	private PersonService PersonService;
-
+	private PersonService personService;
 	private static final Logger logger = LogManager.getLogger(PersonService.class);
-	Gson gson = new Gson();
+	private final ObjectMapper objectMapper;
+	
+	@Autowired
+	public PersonController (PersonService personService, ObjectMapper objectMapper) {
+		this.personService = personService;
+		this.objectMapper = objectMapper;
+	}
 
 	@GetMapping("/person/all")
 	public List<Person> getAllPerson() throws Exception {
-		return PersonService.getAllPerson();
+		return personService.getAllPerson();
 	}
 
 	@PostMapping("/person")
 	public Person addNewPerson(@Valid @RequestBody Person newPerson) throws Exception {
-		PersonService.addPerson(newPerson);
-		logger.info("La personne est enregistrée avec succès ! : " + gson.toJson(newPerson));
+		personService.addPerson(newPerson);
+		String PersonJson = objectMapper.writeValueAsString(newPerson);
+		logger.info("La personne est enregistrée avec succès ! : " + PersonJson);
 		return newPerson;
 	}
 
 	@PutMapping("/person/{firstName}/{lastName}")
 	public Person updatePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
 			@Valid @RequestBody Person updatePerson) throws Exception {
-		PersonService.updatePerson(updatePerson);
-		logger.info("La personne a été modifiée avec succès ! : " + gson.toJson(updatePerson));
+		personService.updatePerson(updatePerson);
+		String PersonJson = objectMapper.writeValueAsString(updatePerson);
+		logger.info("La personne a été modifiée avec succès ! : " + PersonJson);
 		return updatePerson;
 	}
 
 	@DeleteMapping("/person/{firstName}/{lastName}")
 	public Person deletePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
 			Person deletePerson) throws Exception {
-		PersonService.deletePerson(deletePerson);
-		logger.info("Personne supprimé avec succès ! : " + gson.toJson(deletePerson));
+		personService.deletePerson(deletePerson);
+		String PersonJson = objectMapper.writeValueAsString(deletePerson);
+		logger.info("Personne supprimé avec succès ! : " + PersonJson);
 		return deletePerson;
 
 	}
 	
 	@GetMapping("childAlert")
 	public List<ChildByAddressDTO> getChildrenByAddress(String address) throws Exception {
-		return PersonService.getChildrenByAddress(address);
+		return personService.getChildrenByAddress(address);
 	}
 	
 	@GetMapping("/personInfo")
 	public List<PersonInfoLastNameDTO> getPersonInfoByLastName(@RequestParam String lastName) throws Exception {
-		return PersonService.getPersonInfoByLastName(lastName);
+		return personService.getPersonInfoByLastName(lastName);
 		
 	}
 	
 	@GetMapping("/communityEmail")
 	public EmailOfAllPersonDTO getEmailOfAllPersonByCity(@RequestParam String city) throws Exception {
-		return PersonService.getEmailOfAllPersonByCity(city);
+		return personService.getEmailOfAllPersonByCity(city);
 		
 	}
 

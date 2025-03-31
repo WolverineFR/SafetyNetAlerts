@@ -1,15 +1,11 @@
 package com.openclassrooms.safetynetalerts.service;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import com.openclassrooms.safetynetalerts.CustomProperties;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.openclassrooms.safetynetalerts.dto.ChildByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
@@ -18,26 +14,21 @@ import com.openclassrooms.safetynetalerts.model.Person;
 
 @Service
 public class PersonService {
-	@Autowired
-	private final CustomProperties jsonFile;
-
+	
 	private JsonService jsonService;
 	private static String category = "persons";
 
 	private final MedicalRecordsService medicalRecordsService;
 
-	public PersonService(MedicalRecordsService medicalRecordsService, CustomProperties jsonFile,
+	public PersonService(MedicalRecordsService medicalRecordsService,
 			JsonService jsonService) {
-		this.jsonFile = jsonFile;
 		this.jsonService = jsonService;
 		this.medicalRecordsService = medicalRecordsService;
 	}
 
 	// Recuperer toutes les personnes
 	public List<Person> getAllPerson() throws Exception {
-		Type listType = new TypeToken<List<Person>>() {
-		}.getType();
-		return jsonService.readJsonFromFile(listType, category);
+		return jsonService.readJsonFromFile(new TypeReference<List<Person>>() {}, category);
 	}
 
 	// Sauvegarder un medical record en json
@@ -48,13 +39,8 @@ public class PersonService {
 	// Ajouter un Person
 	public void addPerson(Person newPerson) throws Exception {
 		List<Person> allPersonList = getAllPerson();
-
-		try {
 			allPersonList.add(newPerson);
 			savePersonToJson(allPersonList);
-		} catch (JsonSyntaxException e) {
-			throw new RuntimeException("Erreur lors de l'envoie vers le fichier JSON", e);
-		}
 	}
 
 	// Mise à jour des données

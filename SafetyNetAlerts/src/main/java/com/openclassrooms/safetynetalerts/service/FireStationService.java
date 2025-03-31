@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.openclassrooms.safetynetalerts.CustomProperties;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
@@ -23,18 +24,14 @@ import com.openclassrooms.safetynetalerts.model.Person;
 
 @Service
 public class FireStationService {
-
-	@Autowired
-	private final CustomProperties jsonFile;
+	
 	private final PersonService personService;
 	private final MedicalRecordsService medicalRecordsService;
 
 	private JsonService jsonService;
 	private static String category = "firestations";
 
-	public FireStationService(MedicalRecordsService medicalRecordsService, PersonService personService,
-			CustomProperties jsonFile, JsonService jsonService) {
-		this.jsonFile = jsonFile;
+	public FireStationService(MedicalRecordsService medicalRecordsService, PersonService personService, JsonService jsonService) {
 		this.jsonService = jsonService;
 		this.personService = personService;
 		this.medicalRecordsService = medicalRecordsService;
@@ -42,9 +39,7 @@ public class FireStationService {
 
 	// Recuperer toutes les FireStation
 	public List<FireStation> getAllFireStation() throws Exception {
-		Type listType = new TypeToken<List<FireStation>>() {
-		}.getType();
-		return jsonService.readJsonFromFile(listType, category);
+		return jsonService.readJsonFromFile(new TypeReference<List<FireStation>>() {}, category);
 	}
 
 	// Sauvegarder une FireStation en json
@@ -55,13 +50,9 @@ public class FireStationService {
 	// Ajouter une FireStation
 	public void addFireStation(FireStation newFireStation) throws Exception {
 		List<FireStation> allFireStationList = getAllFireStation();
-
-		try {
 			allFireStationList.add(newFireStation);
 			saveFireStationToJson(allFireStationList);
-		} catch (JsonSyntaxException e) {
-			throw new RuntimeException("Erreur lors de l'envoie vers le fichier JSON", e);
-		}
+		
 	}
 
 	// Mise à jour des données
