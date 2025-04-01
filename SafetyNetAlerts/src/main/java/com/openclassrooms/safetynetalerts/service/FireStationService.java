@@ -1,19 +1,14 @@
 package com.openclassrooms.safetynetalerts.service;
 
-import java.lang.reflect.Type;
-import java.time.LocalDate;
-import java.time.Period;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.openclassrooms.safetynetalerts.CustomProperties;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonByAddressDTO;
@@ -21,85 +16,50 @@ import com.openclassrooms.safetynetalerts.dto.PersonFireStationDTO;
 import com.openclassrooms.safetynetalerts.model.FireStation;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.model.Person;
+import com.openclassrooms.safetynetalerts.repository.FireStationRepository;
 
 @Service
 public class FireStationService {
 	
 	private final PersonService personService;
 	private final MedicalRecordsService medicalRecordsService;
+	
+	@Autowired
+	private final FireStationRepository fireStationRepository;
 
-	private JsonService jsonService;
-	private static String category = "firestations";
-
-	public FireStationService(MedicalRecordsService medicalRecordsService, PersonService personService, JsonService jsonService) {
-		this.jsonService = jsonService;
+	public FireStationService(MedicalRecordsService medicalRecordsService, PersonService personService,FireStationRepository fireStationRepository ) {
 		this.personService = personService;
 		this.medicalRecordsService = medicalRecordsService;
+		this.fireStationRepository = fireStationRepository;
 	}
 
 	// Recuperer toutes les FireStation
 	public List<FireStation> getAllFireStation() throws Exception {
-		return jsonService.readJsonFromFile(new TypeReference<List<FireStation>>() {}, category);
+		return fireStationRepository.getAllFireStation();
 	}
 
-	// Sauvegarder une FireStation en json
-	private void saveFireStationToJson(List<FireStation> allFireStationList) {
-		jsonService.writeJsonToFile(category, allFireStationList);
-	}
 
 	// Ajouter une FireStation
 	public void addFireStation(FireStation newFireStation) throws Exception {
-		List<FireStation> allFireStationList = getAllFireStation();
-			allFireStationList.add(newFireStation);
-			saveFireStationToJson(allFireStationList);
+		fireStationRepository.addFireStation(newFireStation);
 		
 	}
 
 	// Mise à jour des données
 	public FireStation updateFireStation(FireStation updateFireStation) throws Exception {
-		List<FireStation> allFireStationList = getAllFireStation();
-		boolean isUpdated = false;
-
-		for (int i = 0; i < allFireStationList.size(); i++) {
-			FireStation mr = allFireStationList.get(i);
-			if (mr.getAddress().equalsIgnoreCase(updateFireStation.getAddress())) {
-				allFireStationList.set(i, updateFireStation);
-				isUpdated = true;
-				break;
-			}
-		}
-
-		if (isUpdated) {
-			saveFireStationToJson(allFireStationList);
-			return updateFireStation;
-		} else {
-			throw new RuntimeException("Aucunes casernes de pompier correspondante trouvées.");
-		}
+		return fireStationRepository.updateFireStation(updateFireStation);
 	}
 
 	// Supression d'un medical record
-	public FireStation deleteFireStation(FireStation deleteFireStation) throws Exception {
-		List<FireStation> allFireStationList = getAllFireStation();
-		boolean isUpdated = false;
-
-		for (int i = 0; i < allFireStationList.size(); i++) {
-			FireStation mr = allFireStationList.get(i);
-			if (mr.getAddress().equalsIgnoreCase(deleteFireStation.getAddress())
-					&& mr.getStation() == (deleteFireStation.getStation())) {
-				allFireStationList.remove(i);
-				isUpdated = true;
-				break;
-			}
-		}
-
-		if (isUpdated) {
-			saveFireStationToJson(allFireStationList);
-			return deleteFireStation;
-		} else {
-			throw new RuntimeException("Cette caserne de pompier n'existe pas.");
-		}
+	public void deleteFireStation(FireStation deleteFireStation) throws Exception {
+	 fireStationRepository.deleteFireStation(deleteFireStation);
 	}
 
+	
+	//// Ajouter ce qui suit dans repo
+	
+	
+	
 	// Recuperer les person par numero de station
 	public FireStationCoverageDTO getPersonsByStationNumber(int stationNumber) throws Exception {
 		List<FireStation> allFireStationList = getAllFireStation();
