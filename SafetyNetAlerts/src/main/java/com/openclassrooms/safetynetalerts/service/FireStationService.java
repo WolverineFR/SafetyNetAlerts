@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
+import com.openclassrooms.safetynetalerts.dto.FloodListOfStationNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonFireStationDTO;
 import com.openclassrooms.safetynetalerts.model.FireStation;
@@ -144,6 +145,32 @@ public class FireStationService {
 			}
 		}
 
+		return filteredPersons;
+	}
+	
+	public List<FloodListOfStationNumberDTO> getPersonByListOfStationNumber (int stationNumber) throws Exception {
+		List<FireStation> allFireStationList = getAllFireStation();
+		List<Person> getAllPerson = personService.getAllPerson();
+		List<MedicalRecords> getAllMedicalRecords = medicalRecordsService.getAllMedicalRecords();
+		
+		List<String> coveredAddresses = allFireStationList.stream()
+				.filter(fireStation -> fireStation.getStation() == stationNumber).map(FireStation::getAddress)
+				.collect(Collectors.toList());
+
+		List<FloodListOfStationNumberDTO> filteredPersons = new ArrayList<>();
+		
+		for (Person person : getAllPerson) {
+			if (coveredAddresses.contains(person.getAddress())) {
+				for (MedicalRecords medicalRecord : getAllMedicalRecords) {
+					if (person.getFirstName().equals(medicalRecord.getFirstName())
+							&& person.getLastName().equals(medicalRecord.getLastName())) {
+						int age = medicalRecordsService.calculateAge(medicalRecord);
+						filteredPersons.add( new FloodListOfStationNumberDTO(person.getFirstName(), person.getLastName(), person.getAddress(), person.getPhone(), age, medicalRecord.getMedications(), medicalRecord.getAllergies()));
+					}
+				}
+			}
+				
+			}
 		return filteredPersons;
 	}
 }

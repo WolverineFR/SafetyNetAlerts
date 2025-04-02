@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
+import com.openclassrooms.safetynetalerts.dto.FloodListOfStationNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonByAddressDTO;
 import com.openclassrooms.safetynetalerts.model.FireStation;
 import com.openclassrooms.safetynetalerts.service.FireStationService;
@@ -70,6 +71,8 @@ public class FireStationController {
 
 	}
 	
+	// URL
+	
 	@GetMapping("/firestation")
     public FireStationCoverageDTO getPersonsByStationNumber(@RequestParam int stationNumber) throws Exception {
         return fireStationService.getPersonsByStationNumber(stationNumber);
@@ -83,6 +86,11 @@ public class FireStationController {
 	@GetMapping("fire")
 	public List<PersonByAddressDTO> getPersonByAddress(@RequestParam String address) throws Exception {
 		return fireStationService.getPersonByAddress(address);
+	}
+	
+	@GetMapping("flood/station")
+	public List<FloodListOfStationNumberDTO> getPersonByListOfStationNumber(@RequestParam int firestation) throws Exception {
+		return fireStationService.getPersonByListOfStationNumber(firestation);
 	}
 
 }
