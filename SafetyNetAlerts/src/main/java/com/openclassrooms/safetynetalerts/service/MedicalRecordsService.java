@@ -1,6 +1,5 @@
 package com.openclassrooms.safetynetalerts.service;
 
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -32,22 +31,22 @@ public class MedicalRecordsService {
 	public void addMedicalRecord(MedicalRecords newMedicalRecords) throws Exception {
 		medicalRecordsRepository.addMedicalRecord(newMedicalRecords);
 	}
-	
+
 	// Mise à jour des données
-		public MedicalRecords updateMedicalRecord(MedicalRecords updateMedicalRecord) throws Exception {
-			return medicalRecordsRepository.updateMedicalRecord(updateMedicalRecord);
-		}
+	public MedicalRecords updateMedicalRecord(MedicalRecords updateMedicalRecord) throws Exception {
+		return medicalRecordsRepository.updateMedicalRecord(updateMedicalRecord);
+	}
 
 	// Supression d'un medical record
 	public MedicalRecords deleteMedicalRecord(MedicalRecords deleteMedicalRecord) throws Exception {
-	return medicalRecordsRepository.deleteMedicalRecord(deleteMedicalRecord);
+		return medicalRecordsRepository.deleteMedicalRecord(deleteMedicalRecord);
 	}
-	
+
 	public int calculateAge(MedicalRecords medicalRecords) {
-		 String birthDate = medicalRecords.getBirthDate();
-		 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyy");
-		 LocalDate birthLocalDate = LocalDate.parse(birthDate, formatter);
-		
+		String birthDate = medicalRecords.getBirthDate();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyy");
+		LocalDate birthLocalDate = LocalDate.parse(birthDate, formatter);
+
 		return Period.between(birthLocalDate, LocalDate.now()).getYears();
 	}
 
