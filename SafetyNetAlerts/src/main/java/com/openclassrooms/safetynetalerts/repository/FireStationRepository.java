@@ -45,8 +45,8 @@ public class FireStationRepository {
 			boolean isUpdated = false;
 
 			for (int i = 0; i < allFireStationList.size(); i++) {
-				FireStation mr = allFireStationList.get(i);
-				if (mr.getAddress().equalsIgnoreCase(updateFireStation.getAddress())) {
+				FireStation fs = allFireStationList.get(i);
+				if (fs.getAddress().equalsIgnoreCase(updateFireStation.getAddress())) {
 					allFireStationList.set(i, updateFireStation);
 					isUpdated = true;
 					break;
@@ -67,9 +67,9 @@ public class FireStationRepository {
 			boolean isUpdated = false;
 
 			for (int i = 0; i < allFireStationList.size(); i++) {
-				FireStation mr = allFireStationList.get(i);
-				if (mr.getAddress().equalsIgnoreCase(deleteFireStation.getAddress())
-						&& mr.getStation() == (deleteFireStation.getStation())) {
+				FireStation fs = allFireStationList.get(i);
+				if (fs.getAddress().equalsIgnoreCase(deleteFireStation.getAddress())
+						&& fs.getStation() == (deleteFireStation.getStation())) {
 					allFireStationList.remove(i);
 					isUpdated = true;
 					break;
