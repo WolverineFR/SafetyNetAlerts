@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Entity
 public class Person {
- 
+
 	private String firstName;
 	private String lastName;
 	private String address;
@@ -17,10 +17,12 @@ public class Person {
 	private String zip;
 	private String phone;
 	private String email;
-	
-	public Person () {}
-	
-	public Person(String firstName,String lastName,String address, String city, String zip, String phone, String email) {
+
+	public Person() {
+	}
+
+	public Person(String firstName, String lastName, String address, String city, String zip, String phone,
+			String email) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.address = address;
@@ -30,67 +32,67 @@ public class Person {
 		this.email = email;
 	}
 
-    // Getter and Setter for firstName
-    public String getFirstName() {
-        return firstName;
-    }
+	// Getter and Setter for firstName
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    // Getter and Setter for lastName
-    public String getLastName() {
-        return lastName;
-    }
+	// Getter and Setter for lastName
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    // Getter and Setter for address
-    public String getAddress() {
-        return address;
-    }
+	// Getter and Setter for address
+	public String getAddress() {
+		return address;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-    // Getter and Setter for city
-    public String getCity() {
-        return city;
-    }
+	// Getter and Setter for city
+	public String getCity() {
+		return city;
+	}
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    // Getter and Setter for zip code
-    public String getZip() {
-        return zip;
-    }
+	// Getter and Setter for zip code
+	public String getZip() {
+		return zip;
+	}
 
-    public void setZip(String zip) {
-        this.zip = zip;
-    }
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
 
-    // Getter and Setter for phone number
-    public String getPhone() {
-        return phone;
-    }
+	// Getter and Setter for phone number
+	public String getPhone() {
+		return phone;
+	}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
-    // Getter and Setter for email
-    public String getEmail() {
-        return email;
-    }
+	// Getter and Setter for email
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 }

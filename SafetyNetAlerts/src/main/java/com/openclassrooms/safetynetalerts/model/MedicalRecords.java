@@ -7,13 +7,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Entity
 @JsonPropertyOrder({ "firstName", "lastName", "birthdate", "medications", "allergies" })
 public class MedicalRecords {

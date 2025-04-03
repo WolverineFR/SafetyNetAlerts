@@ -32,10 +32,11 @@ public class MedicalRecordsRepository {
 	}
 
 	// Ajouter un MedicalRecord
-	public void addMedicalRecord(MedicalRecords newMedicalRecords) throws Exception {
+	public MedicalRecords addMedicalRecord(MedicalRecords newMedicalRecords) throws Exception {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 		allMedicalRecordsList.add(newMedicalRecords);
 		saveMedicalRecordsToJson(allMedicalRecordsList);
+		return newMedicalRecords;
 	}
 
 	// Mise à jour des données

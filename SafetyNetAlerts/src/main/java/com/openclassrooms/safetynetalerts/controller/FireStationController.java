@@ -33,12 +33,11 @@ public class FireStationController {
 	private final ObjectMapper objectMapper;
 
 	@Autowired
-	public FireStationController(FireStationService fireStationService,ObjectMapper objectMapper) {
+	public FireStationController(FireStationService fireStationService, ObjectMapper objectMapper) {
 		this.fireStationService = fireStationService;
 		this.objectMapper = objectMapper;
 	}
 
-	
 	@GetMapping("/firestation/all")
 	public List<FireStation> getAllFireStation() throws Exception {
 		return fireStationService.getAllFireStation();
@@ -47,7 +46,7 @@ public class FireStationController {
 	@PostMapping("/firestation")
 	public FireStation addNewFireStation(@Valid @RequestBody FireStation newFireStation) throws Exception {
 		fireStationService.addFireStation(newFireStation);
-		 String fireStationJson = objectMapper.writeValueAsString(newFireStation);
+		String fireStationJson = objectMapper.writeValueAsString(newFireStation);
 		logger.info("Caserne de pompier enregistrée avec succès ! : " + fireStationJson);
 		return newFireStation;
 	}
@@ -70,26 +69,27 @@ public class FireStationController {
 		return deleteFireStation;
 
 	}
-	
+
 	// URL
-	
 	@GetMapping("/firestation")
-    public FireStationCoverageDTO getPersonsByStationNumber(@RequestParam int stationNumber) throws Exception {
-        return fireStationService.getPersonsByStationNumber(stationNumber);
-    }
-	
+	public FireStationCoverageDTO getPersonsByStationNumber(@RequestParam int stationNumber) throws Exception {
+		return fireStationService.getPersonsByStationNumber(stationNumber);
+	}
+
 	@GetMapping("/phoneAlert")
-	public FireStationCoveragePhoneNumberDTO getPhoneNumberByStationNumber(@RequestParam int firestation) throws Exception {
+	public FireStationCoveragePhoneNumberDTO getPhoneNumberByStationNumber(@RequestParam int firestation)
+			throws Exception {
 		return fireStationService.getPhoneNumberByStationNumber(firestation);
 	}
-	
+
 	@GetMapping("fire")
 	public List<PersonByAddressDTO> getPersonByAddress(@RequestParam String address) throws Exception {
 		return fireStationService.getPersonByAddress(address);
 	}
-	
+
 	@GetMapping("flood/station")
-	public List<FloodListOfStationNumberDTO> getPersonByListOfStationNumber(@RequestParam int firestation) throws Exception {
+	public List<FloodListOfStationNumberDTO> getPersonByListOfStationNumber(@RequestParam int firestation)
+			throws Exception {
 		return fireStationService.getPersonByListOfStationNumber(firestation);
 	}
 

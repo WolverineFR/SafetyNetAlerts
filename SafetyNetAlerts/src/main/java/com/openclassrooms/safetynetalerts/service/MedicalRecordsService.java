@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -28,8 +29,8 @@ public class MedicalRecordsService {
 	}
 
 	// Ajouter un MedicalRecord
-	public void addMedicalRecord(MedicalRecords newMedicalRecords) throws Exception {
-		medicalRecordsRepository.addMedicalRecord(newMedicalRecords);
+	public MedicalRecords addMedicalRecord(MedicalRecords newMedicalRecords) throws Exception {
+	return	medicalRecordsRepository.addMedicalRecord(newMedicalRecords);
 	}
 
 	// Mise à jour des données
@@ -42,6 +43,7 @@ public class MedicalRecordsService {
 		return medicalRecordsRepository.deleteMedicalRecord(deleteMedicalRecord);
 	}
 
+	// Methode de calcule de l'age d'une personne
 	public int calculateAge(MedicalRecords medicalRecords) {
 		String birthDate = medicalRecords.getBirthDate();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyy");

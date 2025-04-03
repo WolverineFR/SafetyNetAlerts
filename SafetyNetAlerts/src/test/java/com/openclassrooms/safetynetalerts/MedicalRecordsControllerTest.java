@@ -7,9 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,11 +42,11 @@ public class MedicalRecordsControllerTest {
 
 		MedicalRecords addNewMedicalRecord = new MedicalRecords("Jean", "Martin", birthdate, medications, allergies);
 
-		doNothing().when(medicalRecordsService).addMedicalRecord(any(MedicalRecords.class));
+		when(medicalRecordsService.addMedicalRecord(any(MedicalRecords.class))).thenReturn(addNewMedicalRecord);;
 
 		mockMvc.perform(post("/medicalrecord").contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(addNewMedicalRecord))).andExpect(status().isCreated())
-				.andExpect(content().string("Rapport medical enregistré avec succès !"));
+				.andExpect(jsonPath("$.firstName").value("Jean")).andExpect(jsonPath("$.lastName").value("Martin"));
 
 	}
 
@@ -79,7 +79,7 @@ public class MedicalRecordsControllerTest {
 		when(medicalRecordsService.deleteMedicalRecord(deleteMedicalRecord)).thenReturn(deleteMedicalRecord);
 
 		mockMvc.perform(delete("/medicalrecord/Jean/Martin").param("firstName", firstName).param("lastName", lastName))
-				.andExpect(status().isOk());
+				.andExpect(status().isNoContent());
 	}
 
 }

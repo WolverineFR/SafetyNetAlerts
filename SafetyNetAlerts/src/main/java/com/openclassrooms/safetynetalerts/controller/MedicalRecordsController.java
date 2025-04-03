@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,29 +41,29 @@ public class MedicalRecordsController {
 	}
 
 	@PostMapping("/medicalrecord")
-	public MedicalRecords addNewMedicalrecord(@Valid @RequestBody MedicalRecords newMedicalRecords) throws Exception {
-		medicalRecordsService.addMedicalRecord(newMedicalRecords);
+	public ResponseEntity <MedicalRecords> addNewMedicalrecord(@Valid @RequestBody MedicalRecords newMedicalRecords) throws Exception {
+		MedicalRecords newMedicalRecord = medicalRecordsService.addMedicalRecord(newMedicalRecords);
 		 String medicalRecordsJson = objectMapper.writeValueAsString(newMedicalRecords);
 		logger.info("Rapport medical enregistré avec succès ! : " + medicalRecordsJson);
-		return newMedicalRecords;
+		return ResponseEntity.status(HttpStatus.CREATED).body(newMedicalRecord);
 	}
 
 	@PutMapping("/medicalrecord/{firstName}/{lastName}")
-	public MedicalRecords updateMedicalRecord(@Valid @PathVariable String firstName, @PathVariable String lastName,
+	public ResponseEntity <MedicalRecords> updateMedicalRecord(@Valid @PathVariable String firstName, @PathVariable String lastName,
 			@Valid @RequestBody MedicalRecords updateMedicalRecord) throws Exception {
-		medicalRecordsService.updateMedicalRecord(updateMedicalRecord);
+		MedicalRecords updateMr = medicalRecordsService.updateMedicalRecord(updateMedicalRecord);
 		 String medicalRecordsJson = objectMapper.writeValueAsString(updateMedicalRecord);
 		logger.info("Rapport medical modifié avec succès ! : " + medicalRecordsJson);
-		return updateMedicalRecord;
+		return ResponseEntity.status(HttpStatus.OK).body(updateMr);
 	}
 
 	@DeleteMapping("/medicalrecord/{firstName}/{lastName}")
-	public MedicalRecords deleteMedicalRecord(@Valid @PathVariable String firstName, @PathVariable String lastName,
+	public ResponseEntity <MedicalRecords> deleteMedicalRecord(@Valid @PathVariable String firstName, @PathVariable String lastName,
 			MedicalRecords deleteMedicalRecord) throws Exception {
-		medicalRecordsService.deleteMedicalRecord(deleteMedicalRecord);
+		MedicalRecords deleteMr = medicalRecordsService.deleteMedicalRecord(deleteMedicalRecord);
 		 String medicalRecordsJson = objectMapper.writeValueAsString(deleteMedicalRecord);
 		logger.info("Rapport medical supprimé avec succès ! : " + medicalRecordsJson);
-		return deleteMedicalRecord;
+		return ResponseEntity.noContent().build();
 
 	}
 
