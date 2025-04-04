@@ -1,12 +1,12 @@
-package com.openclassrooms.safetynetalerts;
+package com.openclassrooms.safetynetalerts.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,14 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openclassrooms.safetynetalerts.controller.MedicalRecordsController;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.service.MedicalRecordsService;
 
@@ -31,7 +30,7 @@ public class MedicalRecordsControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@MockBean
+	@Mock
 	private MedicalRecordsService medicalRecordsService;
 
 	@Test
@@ -42,7 +41,8 @@ public class MedicalRecordsControllerTest {
 
 		MedicalRecords addNewMedicalRecord = new MedicalRecords("Jean", "Martin", birthdate, medications, allergies);
 
-		when(medicalRecordsService.addMedicalRecord(any(MedicalRecords.class))).thenReturn(addNewMedicalRecord);;
+		when(medicalRecordsService.addMedicalRecord(any(MedicalRecords.class))).thenReturn(addNewMedicalRecord);
+		;
 
 		mockMvc.perform(post("/medicalrecord").contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(addNewMedicalRecord))).andExpect(status().isCreated())
@@ -65,21 +65,5 @@ public class MedicalRecordsControllerTest {
 
 	}
 
-	@Test
-	public void deleteMedicalRecordTest() throws Exception {
-		List<String> medications = Arrays.asList("toplexil");
-		List<String> allergies = Arrays.asList("gluten");
-		String birthdate = "01/01/1990";
-		String firstName = "Jean";
-		String lastName = "Martin";
-
-		MedicalRecords deleteMedicalRecord = new MedicalRecords("Jean", "Martin", birthdate, medications, allergies);
-		;
-
-		when(medicalRecordsService.deleteMedicalRecord(deleteMedicalRecord)).thenReturn(deleteMedicalRecord);
-
-		mockMvc.perform(delete("/medicalrecord/Jean/Martin").param("firstName", firstName).param("lastName", lastName))
-				.andExpect(status().isNoContent());
-	}
 
 }

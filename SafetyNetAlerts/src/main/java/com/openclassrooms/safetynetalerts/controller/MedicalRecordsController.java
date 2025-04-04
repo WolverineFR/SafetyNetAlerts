@@ -60,7 +60,7 @@ public class MedicalRecordsController {
 	@DeleteMapping("/medicalrecord/{firstName}/{lastName}")
 	public ResponseEntity <MedicalRecords> deleteMedicalRecord(@Valid @PathVariable String firstName, @PathVariable String lastName,
 			MedicalRecords deleteMedicalRecord) throws Exception {
-		MedicalRecords deleteMr = medicalRecordsService.deleteMedicalRecord(deleteMedicalRecord);
+		 medicalRecordsService.deleteMedicalRecord(firstName, lastName);
 		 String medicalRecordsJson = objectMapper.writeValueAsString(deleteMedicalRecord);
 		logger.info("Rapport medical supprimé avec succès ! : " + medicalRecordsJson);
 		return ResponseEntity.noContent().build();

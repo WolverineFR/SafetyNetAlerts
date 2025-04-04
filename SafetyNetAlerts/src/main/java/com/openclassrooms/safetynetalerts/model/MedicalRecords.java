@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
 
-
 @Entity
 @JsonPropertyOrder({ "firstName", "lastName", "birthdate", "medications", "allergies" })
 public class MedicalRecords {

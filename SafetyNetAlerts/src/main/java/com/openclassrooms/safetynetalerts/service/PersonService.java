@@ -12,6 +12,7 @@ import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.model.Person;
+import com.openclassrooms.safetynetalerts.repository.FireStationRepository;
 import com.openclassrooms.safetynetalerts.repository.PersonRepository;
 
 @Service
@@ -21,10 +22,12 @@ public class PersonService {
 
 	@Autowired
 	private final PersonRepository personRepository;
+	private final FireStationRepository fireStationRepository;
 
-	public PersonService(MedicalRecordsService medicalRecordsService, PersonRepository personRepository) {
+	public PersonService(MedicalRecordsService medicalRecordsService, PersonRepository personRepository,FireStationRepository fireStationRepository) {
 		this.medicalRecordsService = medicalRecordsService;
 		this.personRepository = personRepository;
+		this.fireStationRepository = fireStationRepository;
 	}
 
 	// Recuperer toutes les personnes
@@ -34,6 +37,24 @@ public class PersonService {
 
 	// Ajouter un Person
 	public void addPerson(Person newPerson) throws Exception {
+		 List<MedicalRecords> medicalRecords = medicalRecordsService.getAllMedicalRecords();
+		    boolean hasMedicalRecord = medicalRecords.stream().anyMatch(med ->
+		        med.getFirstName().equalsIgnoreCase(newPerson.getFirstName()) &&
+		        med.getLastName().equalsIgnoreCase(newPerson.getLastName())
+		    );
+
+		    if (!hasMedicalRecord) {
+		        throw new RuntimeException("Aucun dossier médical trouvé pour cette personne.");
+		    }
+
+		    boolean addressCovered = fireStationRepository.getAllFireStation().stream().anyMatch(fs ->
+		        fs.getAddress().equalsIgnoreCase(newPerson.getAddress())
+		    );
+
+		    if (!addressCovered) {
+		        throw new RuntimeException("L'adresse de la personne n'est pas couverte par une caserne.");
+		    }
+		
 		personRepository.addPerson(newPerson);
 	}
 
@@ -44,7 +65,11 @@ public class PersonService {
 
 	// Supression d'un medical record
 	public Person deletePerson(Person deletePerson) throws Exception {
-		return personRepository.deletePerson(deletePerson);
+		Person deleted = personRepository.deletePerson(deletePerson);
+
+	    medicalRecordsService.deleteMedicalRecord(deletePerson.getFirstName(), deletePerson.getLastName());
+
+	    return deleted;
 	}
 
 	/// URL

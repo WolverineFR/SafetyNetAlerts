@@ -27,7 +27,7 @@ public class MedicalRecordsRepository {
 	}
 
 	// Sauvegarder un medical record en json
-	private void saveMedicalRecordsToJson(List<MedicalRecords> allMedicalRecordsList) {
+	public void saveMedicalRecordsToJson(List<MedicalRecords> allMedicalRecordsList) {
 		jsonService.writeJsonToFile(category, allMedicalRecordsList);
 	}
 

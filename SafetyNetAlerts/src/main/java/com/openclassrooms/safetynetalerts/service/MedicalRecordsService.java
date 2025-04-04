@@ -39,8 +39,18 @@ public class MedicalRecordsService {
 	}
 
 	// Supression d'un medical record
-	public MedicalRecords deleteMedicalRecord(MedicalRecords deleteMedicalRecord) throws Exception {
-		return medicalRecordsRepository.deleteMedicalRecord(deleteMedicalRecord);
+	public void deleteMedicalRecord(String firstName, String lastName) throws Exception {
+		List<MedicalRecords> allRecords = getAllMedicalRecords();
+	    boolean removed = allRecords.removeIf(record ->
+	        record.getFirstName().equalsIgnoreCase(firstName) &&
+	        record.getLastName().equalsIgnoreCase(lastName)
+	    );
+
+	    if (removed) {
+	    	medicalRecordsRepository.saveMedicalRecordsToJson(allRecords);
+	    } else {
+	        throw new RuntimeException("Aucun dossier médical trouvé pour cette personne.");
+	    }
 	}
 
 	// Methode de calcule de l'age d'une personne
