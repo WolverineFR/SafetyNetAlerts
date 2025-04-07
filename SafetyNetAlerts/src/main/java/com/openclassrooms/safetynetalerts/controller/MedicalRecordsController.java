@@ -28,7 +28,7 @@ public class MedicalRecordsController {
 	private MedicalRecordsService medicalRecordsService;
 	private static final Logger logger = LogManager.getLogger(MedicalRecordsService.class);
 	private final ObjectMapper objectMapper;
-	
+
 	@Autowired
 	public MedicalRecordsController(MedicalRecordsService medicalRecordsService, ObjectMapper objectMapper) {
 		this.medicalRecordsService = medicalRecordsService;
@@ -41,27 +41,28 @@ public class MedicalRecordsController {
 	}
 
 	@PostMapping("/medicalrecord")
-	public ResponseEntity <MedicalRecords> addNewMedicalrecord(@Valid @RequestBody MedicalRecords newMedicalRecords) throws Exception {
+	public ResponseEntity<MedicalRecords> addNewMedicalrecord(@Valid @RequestBody MedicalRecords newMedicalRecords)
+			throws Exception {
 		MedicalRecords newMedicalRecord = medicalRecordsService.addMedicalRecord(newMedicalRecords);
-		 String medicalRecordsJson = objectMapper.writeValueAsString(newMedicalRecords);
+		String medicalRecordsJson = objectMapper.writeValueAsString(newMedicalRecords);
 		logger.info("Rapport medical enregistré avec succès ! : " + medicalRecordsJson);
 		return ResponseEntity.status(HttpStatus.CREATED).body(newMedicalRecord);
 	}
 
 	@PutMapping("/medicalrecord/{firstName}/{lastName}")
-	public ResponseEntity <MedicalRecords> updateMedicalRecord(@Valid @PathVariable String firstName, @PathVariable String lastName,
-			@Valid @RequestBody MedicalRecords updateMedicalRecord) throws Exception {
-		MedicalRecords updateMr = medicalRecordsService.updateMedicalRecord(updateMedicalRecord);
-		 String medicalRecordsJson = objectMapper.writeValueAsString(updateMedicalRecord);
+	public ResponseEntity<MedicalRecords> updateMedicalRecord(@Valid @PathVariable String firstName,
+			@PathVariable String lastName, @Valid @RequestBody MedicalRecords updateMedicalRecord) throws Exception {
+		MedicalRecords updateMr = medicalRecordsService.updateMedicalRecord(firstName, lastName, updateMedicalRecord);
+		String medicalRecordsJson = objectMapper.writeValueAsString(updateMedicalRecord);
 		logger.info("Rapport medical modifié avec succès ! : " + medicalRecordsJson);
 		return ResponseEntity.status(HttpStatus.OK).body(updateMr);
 	}
 
 	@DeleteMapping("/medicalrecord/{firstName}/{lastName}")
-	public ResponseEntity <MedicalRecords> deleteMedicalRecord(@Valid @PathVariable String firstName, @PathVariable String lastName,
-			MedicalRecords deleteMedicalRecord) throws Exception {
-		 medicalRecordsService.deleteMedicalRecord(firstName, lastName);
-		 String medicalRecordsJson = objectMapper.writeValueAsString(deleteMedicalRecord);
+	public ResponseEntity<MedicalRecords> deleteMedicalRecord(@Valid @PathVariable String firstName,
+			@PathVariable String lastName, MedicalRecords deleteMedicalRecord) throws Exception {
+		medicalRecordsService.deleteMedicalRecord(firstName, lastName);
+		String medicalRecordsJson = objectMapper.writeValueAsString(deleteMedicalRecord);
 		logger.info("Rapport medical supprimé avec succès ! : " + medicalRecordsJson);
 		return ResponseEntity.noContent().build();
 

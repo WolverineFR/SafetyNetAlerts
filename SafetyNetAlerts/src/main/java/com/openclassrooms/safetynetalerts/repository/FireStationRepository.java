@@ -32,10 +32,11 @@ public class FireStationRepository {
 		}
 		
 		// Ajouter une FireStation
-		public void addFireStation(FireStation newFireStation) throws Exception {
+		public FireStation addFireStation(FireStation newFireStation) throws Exception {
 			List<FireStation> allFireStationList = getAllFireStation();
 				allFireStationList.add(newFireStation);
 				saveFireStationToJson(allFireStationList);
+				return newFireStation;
 			
 		}
 		

@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,29 +46,29 @@ public class PersonController {
 	}
 
 	@PostMapping("/person")
-	public Person addNewPerson(@Valid @RequestBody Person newPerson) throws Exception {
-		personService.addPerson(newPerson);
+	public ResponseEntity<Person> addNewPerson(@Valid @RequestBody Person newPerson) throws Exception {
+		Person addnewPerson = personService.addPerson(newPerson);
 		String PersonJson = objectMapper.writeValueAsString(newPerson);
 		logger.info("La personne est enregistrée avec succès ! : " + PersonJson);
-		return newPerson;
+		return ResponseEntity.status(HttpStatus.CREATED).body(addnewPerson);
 	}
 
 	@PutMapping("/person/{firstName}/{lastName}")
-	public Person updatePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
+	public ResponseEntity<Person> updatePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
 			@Valid @RequestBody Person updatePerson) throws Exception {
-		personService.updatePerson(updatePerson);
+		Person updateP = personService.updatePerson(firstName, lastName,updatePerson);
 		String PersonJson = objectMapper.writeValueAsString(updatePerson);
 		logger.info("La personne a été modifiée avec succès ! : " + PersonJson);
-		return updatePerson;
+		return ResponseEntity.status(HttpStatus.OK).body(updateP);
 	}
 
 	@DeleteMapping("/person/{firstName}/{lastName}")
-	public Person deletePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
+	public ResponseEntity<Person> deletePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
 			Person deletePerson) throws Exception {
 		personService.deletePerson(deletePerson);
 		String PersonJson = objectMapper.writeValueAsString(deletePerson);
 		logger.info("Personne supprimé avec succès ! : " + PersonJson);
-		return deletePerson;
+		return ResponseEntity.noContent().build();
 
 	}
 	

@@ -40,7 +40,7 @@ public class MedicalRecordsRepository {
 	}
 
 	// Mise à jour des données
-	public MedicalRecords updateMedicalRecord(MedicalRecords updateMedicalRecord) throws Exception {
+	public MedicalRecords updateMedicalRecord(String firstName, String lastName, MedicalRecords updateMedicalRecord) throws Exception {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 		boolean isUpdated = false;
 

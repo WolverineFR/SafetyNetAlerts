@@ -36,7 +36,7 @@ public class PersonService {
 	}
 
 	// Ajouter un Person
-	public void addPerson(Person newPerson) throws Exception {
+	public Person addPerson(Person newPerson) throws Exception {
 		 List<MedicalRecords> medicalRecords = medicalRecordsService.getAllMedicalRecords();
 		    boolean hasMedicalRecord = medicalRecords.stream().anyMatch(med ->
 		        med.getFirstName().equalsIgnoreCase(newPerson.getFirstName()) &&
@@ -55,19 +55,33 @@ public class PersonService {
 		        throw new RuntimeException("L'adresse de la personne n'est pas couverte par une caserne.");
 		    }
 		
-		personRepository.addPerson(newPerson);
+	return personRepository.addPerson(newPerson);
 	}
 
 	// Mise à jour des données
-	public Person updatePerson(Person updatePerson) throws Exception {
-		return personRepository.updatePerson(updatePerson);
+	public Person updatePerson(String firstName, String lastName, Person updatePerson) throws Exception {
+		 if (!firstName.equalsIgnoreCase(updatePerson.getFirstName()) ||
+			        !lastName.equalsIgnoreCase(updatePerson.getLastName())) {
+			        throw new IllegalArgumentException("Prénom et nom de l'URL ne correspondent pas à ceux du corps de la requête.");
+			    }
+		
+		return personRepository.updatePerson(firstName,lastName,updatePerson);
 	}
 
 	// Supression d'un medical record
 	public Person deletePerson(Person deletePerson) throws Exception {
 		Person deleted = personRepository.deletePerson(deletePerson);
+		 List<MedicalRecords> allMedicalRecords = medicalRecordsService.getAllMedicalRecords();
 
-	    medicalRecordsService.deleteMedicalRecord(deletePerson.getFirstName(), deletePerson.getLastName());
+		    boolean medicalRecordExists = allMedicalRecords.stream()
+		            .anyMatch(record -> record.getFirstName().equalsIgnoreCase(deletePerson.getFirstName()) 
+		                               && record.getLastName().equalsIgnoreCase(deletePerson.getLastName()));
+
+		    if (medicalRecordExists) {
+		        medicalRecordsService.deleteMedicalRecord(deletePerson.getFirstName(), deletePerson.getLastName());
+		    } else {
+		    	 throw new RuntimeException ("Aucun dossier médical à supprimer pour " + deletePerson.getFirstName() + " " + deletePerson.getLastName());
+		    }
 
 	    return deleted;
 	}

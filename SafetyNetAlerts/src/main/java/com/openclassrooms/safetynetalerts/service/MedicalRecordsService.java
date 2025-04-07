@@ -30,27 +30,45 @@ public class MedicalRecordsService {
 
 	// Ajouter un MedicalRecord
 	public MedicalRecords addMedicalRecord(MedicalRecords newMedicalRecords) throws Exception {
-	return	medicalRecordsRepository.addMedicalRecord(newMedicalRecords);
+		if (newMedicalRecords.getFirstName() == null || newMedicalRecords.getFirstName().isBlank()
+				|| newMedicalRecords.getLastName() == null || newMedicalRecords.getLastName().isBlank()) {
+			throw new IllegalArgumentException("Le prénom et le nom ne peuvent pas être vides.");
+		}
+
+		List<MedicalRecords> allMedicalRecords = medicalRecordsRepository.getAllMedicalRecords();
+
+		boolean alreadyExists = allMedicalRecords.stream()
+				.anyMatch(record -> record.getFirstName().equalsIgnoreCase(newMedicalRecords.getFirstName())
+						&& record.getLastName().equalsIgnoreCase(newMedicalRecords.getLastName()));
+
+		if (alreadyExists) {
+			throw new IllegalArgumentException("Un dossier médical existe déjà pour cette personne.");
+		}
+
+		return medicalRecordsRepository.addMedicalRecord(newMedicalRecords);
 	}
+	
 
 	// Mise à jour des données
-	public MedicalRecords updateMedicalRecord(MedicalRecords updateMedicalRecord) throws Exception {
-		return medicalRecordsRepository.updateMedicalRecord(updateMedicalRecord);
+	public MedicalRecords updateMedicalRecord(String firstName, String lastName, MedicalRecords updateMedicalRecord) throws Exception {
+		 if (!firstName.equalsIgnoreCase(updateMedicalRecord.getFirstName()) ||
+			        !lastName.equalsIgnoreCase(updateMedicalRecord.getLastName())) {
+			        throw new IllegalArgumentException("Prénom et nom de l'URL ne correspondent pas à ceux du corps de la requête.");
+			    }
+		return medicalRecordsRepository.updateMedicalRecord(firstName,lastName,updateMedicalRecord);
 	}
 
 	// Supression d'un medical record
 	public void deleteMedicalRecord(String firstName, String lastName) throws Exception {
 		List<MedicalRecords> allRecords = getAllMedicalRecords();
-	    boolean removed = allRecords.removeIf(record ->
-	        record.getFirstName().equalsIgnoreCase(firstName) &&
-	        record.getLastName().equalsIgnoreCase(lastName)
-	    );
+		boolean removed = allRecords.removeIf(record -> record.getFirstName().equalsIgnoreCase(firstName)
+				&& record.getLastName().equalsIgnoreCase(lastName));
 
-	    if (removed) {
-	    	medicalRecordsRepository.saveMedicalRecordsToJson(allRecords);
-	    } else {
-	        throw new RuntimeException("Aucun dossier médical trouvé pour cette personne.");
-	    }
+		if (removed) {
+			medicalRecordsRepository.saveMedicalRecordsToJson(allRecords);
+		} else {
+			throw new RuntimeException("Aucun dossier médical trouvé pour cette personne.");
+		}
 	}
 
 	// Methode de calcule de l'age d'une personne

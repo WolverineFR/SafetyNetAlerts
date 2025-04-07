@@ -31,14 +31,15 @@ public class PersonRepository {
 		}
 
 		// Ajouter un Person
-		public void addPerson(Person newPerson) throws Exception {
+		public Person addPerson(Person newPerson) throws Exception {
 			List<Person> allPersonList = getAllPerson();
 				allPersonList.add(newPerson);
 				savePersonToJson(allPersonList);
+				return newPerson;
 		}
 
 		// Mise à jour des données
-		public Person updatePerson(Person updatePerson) throws Exception {
+		public Person updatePerson(String firstName, String lastName, Person updatePerson) throws Exception {
 			List<Person> allPersonList = getAllPerson();
 			boolean isUpdated = false;
 

@@ -1,8 +1,12 @@
 package com.openclassrooms.safetynetalerts.controller;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
@@ -16,13 +20,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.safetynetalerts.controller.PersonController;
 import com.openclassrooms.safetynetalerts.model.Person;
 import com.openclassrooms.safetynetalerts.service.PersonService;
 
-@WebMvcTest(controllers = PersonController.class)
+@WebMvcTest(PersonController.class)
 public class PersonControllerTest {
-	/*
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -31,15 +35,21 @@ public class PersonControllerTest {
 	private PersonService personService;
 
 	@Test
-	public void testGetPersonById() throws Exception {
-		Person person = new Person( "John", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6512",
-				"jaboyd@email.com");
+	public void addNewPersonTest() throws Exception {
+		String firstName = "Jean";
+		String lastName = "Martin";
+		String address = "1 rue des fleurs";
+		String city = "Paris";
+		String zip = "75001";
+		String phone = "0601020304";
+		String email = "jean-martin@email.com";
 
-	//	when(personService.getPersonById(1)).thenReturn(Optional.of(person));
+		Person addNewPerson = new Person(firstName, lastName, address, city, zip, phone, email);
 
-		mockMvc.perform(get("/person/1").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(content().json(
-						"{\"id\":1,\"firstName\":\"John\",\"lastName\":\"Boyd\",\"address\":\"1509 Culver St\",\"city\":\"Culver\",\"zip\":\"97451\",\"phone\":\"841-874-6512\",\"email\":\"jaboyd@email.com\"}"));
+		when(personService.addPerson(any(Person.class))).thenReturn(addNewPerson);
+
+		mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(addNewPerson))).andExpect(status().isCreated())
+				.andExpect(jsonPath("$.firstName").value("Jean")).andExpect(jsonPath("$.lastName").value("Martin"));
 	}
-*/
 }

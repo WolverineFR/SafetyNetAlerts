@@ -1,6 +1,7 @@
 package com.openclassrooms.safetynetalerts.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -30,7 +32,7 @@ public class MedicalRecordsControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@Mock
+	@MockBean
 	private MedicalRecordsService medicalRecordsService;
 
 	@Test
@@ -38,11 +40,12 @@ public class MedicalRecordsControllerTest {
 		List<String> medications = Arrays.asList("doliprane");
 		List<String> allergies = Arrays.asList("pollen");
 		String birthdate = "01/01/1990";
+		String firstName = "Jean";
+		String lastName = "Martin";
 
-		MedicalRecords addNewMedicalRecord = new MedicalRecords("Jean", "Martin", birthdate, medications, allergies);
+		MedicalRecords addNewMedicalRecord = new MedicalRecords(firstName, lastName, birthdate, medications, allergies);
 
 		when(medicalRecordsService.addMedicalRecord(any(MedicalRecords.class))).thenReturn(addNewMedicalRecord);
-		;
 
 		mockMvc.perform(post("/medicalrecord").contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(addNewMedicalRecord))).andExpect(status().isCreated())
@@ -55,10 +58,13 @@ public class MedicalRecordsControllerTest {
 		List<String> medications = Arrays.asList("toplexil");
 		List<String> allergies = Arrays.asList("gluten");
 		String birthdate = "01/01/1990";
+		String firstName = "Jean";
+		String lastName = "Martin";
 
-		MedicalRecords updateMedicalRecord = new MedicalRecords("Jean", "Martin", birthdate, medications, allergies);
+		MedicalRecords updateMedicalRecord = new MedicalRecords(firstName, lastName, birthdate, medications, allergies);
 
-		when(medicalRecordsService.updateMedicalRecord(any(MedicalRecords.class))).thenReturn(updateMedicalRecord);
+		when(medicalRecordsService.updateMedicalRecord(eq(firstName), eq(lastName), any(MedicalRecords.class)))
+        .thenReturn(updateMedicalRecord);
 
 		mockMvc.perform(put("/medicalrecord/Jean/Martin").contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateMedicalRecord))).andExpect(status().isOk());

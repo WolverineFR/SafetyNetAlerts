@@ -6,16 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @JsonPropertyOrder({ "firstName", "lastName", "birthdate", "medications", "allergies" })
 public class MedicalRecords {
 	
-	@NotBlank(message = "Ce champ est requis et ne peux pas être vide")
 	private String firstName;
-	
-	@NotBlank(message = "Ce champ est requis et ne peux pas être vide")
 	private String lastName;
 	
 	@JsonProperty("birthdate")

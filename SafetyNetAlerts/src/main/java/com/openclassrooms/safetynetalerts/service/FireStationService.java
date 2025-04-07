@@ -41,8 +41,8 @@ public class FireStationService {
 
 
 	// Ajouter une FireStation
-	public void addFireStation(FireStation newFireStation) throws Exception {
-		fireStationRepository.addFireStation(newFireStation);
+	public FireStation addFireStation(FireStation newFireStation) throws Exception {
+		return fireStationRepository.addFireStation(newFireStation);
 		
 	}
 

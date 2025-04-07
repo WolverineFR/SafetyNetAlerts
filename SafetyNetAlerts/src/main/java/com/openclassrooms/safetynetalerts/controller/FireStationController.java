@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,11 +46,11 @@ public class FireStationController {
 	}
 
 	@PostMapping("/firestation")
-	public FireStation addNewFireStation(@Valid @RequestBody FireStation newFireStation) throws Exception {
-		fireStationService.addFireStation(newFireStation);
+	public ResponseEntity<FireStation> addNewFireStation(@Valid @RequestBody FireStation newFireStation) throws Exception {
+		FireStation addNewFS = fireStationService.addFireStation(newFireStation);
 		String fireStationJson = objectMapper.writeValueAsString(newFireStation);
 		logger.info("Caserne de pompier enregistrée avec succès ! : " + fireStationJson);
-		return newFireStation;
+		return ResponseEntity.status(HttpStatus.CREATED).body(addNewFS);
 	}
 
 	@PutMapping("/firestation/{address}")
