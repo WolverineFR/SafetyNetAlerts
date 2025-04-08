@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.openclassrooms.safetyalerts.exception.FireStationException;
+import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.FloodListOfStationNumberDTO;
@@ -35,31 +37,48 @@ public class FireStationService {
 	}
 
 	// Recuperer toutes les FireStation
-	public List<FireStation> getAllFireStation() throws Exception {
+	public List<FireStation> getAllFireStation() {
 		return fireStationRepository.getAllFireStation();
 	}
 
 
 	// Ajouter une FireStation
-	public FireStation addFireStation(FireStation newFireStation) throws Exception {
-		return fireStationRepository.addFireStation(newFireStation);
-		
+	public FireStation addFireStation(FireStation newFireStation) throws FireStationException {
+		if (newFireStation.getAddress() == null || newFireStation.getAddress().isBlank() || newFireStation.getStation() == 0 ) {
+			throw new FireStationException("L'adresse de la caserne ne peut pas être vide et son numéro doit être supérieur à 0.");
+		}
+			List<FireStation> allFireStations = fireStationRepository.getAllFireStation();
+			
+			boolean alreadyExists = allFireStations.stream().anyMatch(record -> record.getAddress().equalsIgnoreCase(newFireStation.getAddress()));
+			
+			if (alreadyExists) {
+				throw new FireStationException("Une caserne de pompier à cette adresse existe déjà.");
+			}
+			return fireStationRepository.addFireStation(newFireStation);
 	}
 
 	// Mise à jour des données
-	public FireStation updateFireStation(FireStation updateFireStation) throws Exception {
-		return fireStationRepository.updateFireStation(updateFireStation);
+	public FireStation updateFireStation(String address,int station ,FireStation updateFireStation) throws ResourceNotFoundException {
+		if (!address.equalsIgnoreCase(updateFireStation.getAddress()) || !(station == updateFireStation.getStation())) {
+			throw new IllegalArgumentException("Adresse et numéro de station de l'url ne correspondent pas à ceux du corps de la requete");
+		}
+		return fireStationRepository.updateFireStation(address, station, updateFireStation);
 	}
 
 	// Supression d'un medical record
-	public void deleteFireStation(FireStation deleteFireStation) throws Exception {
-	 fireStationRepository.deleteFireStation(deleteFireStation);
+	public void deleteFireStation( String address, int station) throws ResourceNotFoundException {
+	 List<FireStation> allFireStations = getAllFireStation();
+	 boolean removed = allFireStations.removeIf(firestation -> firestation.getAddress().equalsIgnoreCase(address) && (firestation.getStation() == station));
+		if (removed) {
+			fireStationRepository.saveFireStationToJson(allFireStations);
+		} else {
+			throw new ResourceNotFoundException("Aucune casernes trouvé pour ces informations");
+		}
 	}
 
 	
-	//// Ajouter ce qui suit dans repo
 	
-	
+	// URL
 	
 	// Recuperer les person par numero de station
 	public FireStationCoverageDTO getPersonsByStationNumber(int stationNumber) throws Exception {

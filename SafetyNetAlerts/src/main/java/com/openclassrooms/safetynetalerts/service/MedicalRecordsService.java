@@ -77,12 +77,12 @@ public class MedicalRecordsService {
 
 	// Supression d'un medical record
 	public void deleteMedicalRecord(String firstName, String lastName) throws ResourceNotFoundException {
-		List<MedicalRecords> allRecords = getAllMedicalRecords();
-		boolean removed = allRecords.removeIf(record -> record.getFirstName().equalsIgnoreCase(firstName)
+		List<MedicalRecords> allMedicalRecords = getAllMedicalRecords();
+		boolean removed = allMedicalRecords.removeIf(record -> record.getFirstName().equalsIgnoreCase(firstName)
 				&& record.getLastName().equalsIgnoreCase(lastName));
 
 		if (removed) {
-			medicalRecordsRepository.saveMedicalRecordsToJson(allRecords);
+			medicalRecordsRepository.saveMedicalRecordsToJson(allMedicalRecords);
 		} else {
 			throw new ResourceNotFoundException("Aucun dossier médical trouvé pour cette personne.");
 		}

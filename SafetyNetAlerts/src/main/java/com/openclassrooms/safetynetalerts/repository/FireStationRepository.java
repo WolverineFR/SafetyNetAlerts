@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.FireStation;
 import com.openclassrooms.safetynetalerts.service.JsonService;
 
@@ -22,17 +23,17 @@ public class FireStationRepository {
 	
 
 	// Recuperer toutes les FireStation
-	public List<FireStation> getAllFireStation() throws Exception {
+	public List<FireStation> getAllFireStation() {
 		return jsonService.readJsonFromFile(new TypeReference<List<FireStation>>() {}, category);
 	}
 	
 	// Sauvegarder une FireStation en json
-		private void saveFireStationToJson(List<FireStation> allFireStationList) {
+		public void saveFireStationToJson(List<FireStation> allFireStationList) {
 			jsonService.writeJsonToFile(category, allFireStationList);
 		}
 		
 		// Ajouter une FireStation
-		public FireStation addFireStation(FireStation newFireStation) throws Exception {
+		public FireStation addFireStation(FireStation newFireStation) {
 			List<FireStation> allFireStationList = getAllFireStation();
 				allFireStationList.add(newFireStation);
 				saveFireStationToJson(allFireStationList);
@@ -41,7 +42,7 @@ public class FireStationRepository {
 		}
 		
 		// Mise à jour des données
-		public FireStation updateFireStation(FireStation updateFireStation) throws Exception {
+		public FireStation updateFireStation(String address ,int station,FireStation updateFireStation) {
 			List<FireStation> allFireStationList = getAllFireStation();
 			boolean isUpdated = false;
 
@@ -58,12 +59,12 @@ public class FireStationRepository {
 				saveFireStationToJson(allFireStationList);
 				return updateFireStation;
 			} else {
-				throw new RuntimeException("Aucunes casernes de pompier correspondante trouvées.");
+				throw new ResourceNotFoundException("Aucunes casernes de pompier correspondante trouvées.");
 			}
 		}
 		
 		// Supression d'un medical record
-		public FireStation deleteFireStation(FireStation deleteFireStation) throws Exception {
+		public FireStation deleteFireStation(FireStation deleteFireStation) {
 			List<FireStation> allFireStationList = getAllFireStation();
 			boolean isUpdated = false;
 
@@ -81,7 +82,7 @@ public class FireStationRepository {
 				saveFireStationToJson(allFireStationList);
 				return deleteFireStation;
 			} else {
-				throw new RuntimeException("Cette caserne de pompier n'existe pas.");
+				throw new ResourceNotFoundException("Cette caserne de pompier n'existe pas.");
 			}
 		}
 	
