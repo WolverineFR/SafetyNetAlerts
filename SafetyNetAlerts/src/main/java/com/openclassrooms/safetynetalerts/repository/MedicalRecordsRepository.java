@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.service.JsonService;
 
@@ -21,7 +22,7 @@ public class MedicalRecordsRepository {
 	}
 
 	// Recuperer tout les MedicalRecords
-	public List<MedicalRecords> getAllMedicalRecords() throws Exception {
+	public List<MedicalRecords> getAllMedicalRecords() {
 		return jsonService.readJsonFromFile(new TypeReference<List<MedicalRecords>>() {
 		}, category);
 	}
@@ -32,7 +33,7 @@ public class MedicalRecordsRepository {
 	}
 
 	// Ajouter un MedicalRecord
-	public MedicalRecords addMedicalRecord(MedicalRecords newMedicalRecords) throws Exception {
+	public MedicalRecords addMedicalRecord(MedicalRecords newMedicalRecords) {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 		allMedicalRecordsList.add(newMedicalRecords);
 		saveMedicalRecordsToJson(allMedicalRecordsList);
@@ -40,7 +41,7 @@ public class MedicalRecordsRepository {
 	}
 
 	// Mise à jour des données
-	public MedicalRecords updateMedicalRecord(String firstName, String lastName, MedicalRecords updateMedicalRecord) throws Exception {
+	public MedicalRecords updateMedicalRecord(String firstName, String lastName, MedicalRecords updateMedicalRecord) {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 		boolean isUpdated = false;
 
@@ -58,12 +59,12 @@ public class MedicalRecordsRepository {
 			saveMedicalRecordsToJson(allMedicalRecordsList);
 			return updateMedicalRecord;
 		} else {
-			throw new RuntimeException("Aucun dossier médical correspondant trouvé.");
+			throw new ResourceNotFoundException("Aucun dossier médical correspondant trouvé.");
 		}
 	}
 
 	// Supression d'un medical record
-	public MedicalRecords deleteMedicalRecord(MedicalRecords deleteMedicalRecord) throws Exception {
+	public MedicalRecords deleteMedicalRecord(MedicalRecords deleteMedicalRecord) {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 		boolean isUpdated = false;
 
@@ -81,7 +82,7 @@ public class MedicalRecordsRepository {
 			saveMedicalRecordsToJson(allMedicalRecordsList);
 			return deleteMedicalRecord;
 		} else {
-			throw new RuntimeException("Ce rapport medical n'existe pas");
+			throw new ResourceNotFoundException("Ce rapport medical n'existe pas");
 		}
 	}
 }
