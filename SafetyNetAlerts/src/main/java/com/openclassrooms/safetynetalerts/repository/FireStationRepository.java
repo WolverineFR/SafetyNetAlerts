@@ -42,7 +42,7 @@ public class FireStationRepository {
 		}
 		
 		// Mise à jour des données
-		public FireStation updateFireStation(String address ,int station,FireStation updateFireStation) {
+		public FireStation updateFireStation(String address ,FireStation updateFireStation) {
 			List<FireStation> allFireStationList = getAllFireStation();
 			boolean isUpdated = false;
 

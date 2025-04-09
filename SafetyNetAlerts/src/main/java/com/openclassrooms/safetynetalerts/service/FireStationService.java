@@ -58,11 +58,11 @@ public class FireStationService {
 	}
 
 	// Mise à jour des données
-	public FireStation updateFireStation(String address,int station ,FireStation updateFireStation) throws ResourceNotFoundException {
+	public FireStation updateFireStation(String address ,FireStation updateFireStation) throws ResourceNotFoundException {
 		if (!address.equalsIgnoreCase(updateFireStation.getAddress())) {
 			throw new IllegalArgumentException("L'adresse de la caserne dans l'url ne correspond pas au corps de la requete");
 		}
-		return fireStationRepository.updateFireStation(address, station, updateFireStation);
+		return fireStationRepository.updateFireStation(address,updateFireStation);
 	}
 
 	// Supression d'un medical record

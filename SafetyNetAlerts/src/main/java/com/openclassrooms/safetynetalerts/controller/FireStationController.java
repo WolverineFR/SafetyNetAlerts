@@ -73,10 +73,10 @@ public class FireStationController {
 	}
 
 	@PutMapping("/firestation/{address}")
-	public ResponseEntity<FireStation> updateFireStation(@Valid @PathVariable String address,@Valid @PathVariable int station,
+	public ResponseEntity<FireStation> updateFireStation(@Valid @PathVariable String address,
 			@Valid @RequestBody FireStation updateFireStation) {
 		try {
-			FireStation updateFS = fireStationService.updateFireStation(address, station, updateFireStation);
+			FireStation updateFS = fireStationService.updateFireStation(address, updateFireStation);
 			String fireStationJson = objectMapper.writeValueAsString(updateFireStation);
 			logger.info("Caserne de pompier modifiée avec succès ! : " + fireStationJson);
 			return ResponseEntity.status(HttpStatus.OK).body(updateFS);
@@ -99,7 +99,7 @@ public class FireStationController {
 			FireStation deleteFireStation) {
 		try {
 			fireStationService.deleteFireStation(address, station);
-			logger.info("Caserne de pompier supprimée avec succès ! : à l'adresse : {} station numéro : {}",address, station);
+			logger.info("Caserne de pompier supprimée avec succès ! Adresse : {}, Station numéro : {}",address, station);
 			
 			return ResponseEntity.noContent().build();
 		} catch (ResourceNotFoundException e) {
