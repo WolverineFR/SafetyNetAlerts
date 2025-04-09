@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.openclassrooms.safetyalerts.exception.PersonException;
+import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.dto.ChildByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
@@ -31,12 +33,28 @@ public class PersonService {
 	}
 
 	// Recuperer toutes les personnes
-	public List<Person> getAllPerson() throws Exception {
+	public List<Person> getAllPerson() {
 		return personRepository.getAllPerson();
 	}
 
 	// Ajouter un Person
-	public Person addPerson(Person newPerson) throws Exception {
+	public Person addPerson(Person newPerson) throws PersonException {
+		if (newPerson.getFirstName() == null || newPerson.getFirstName().isBlank() || newPerson.getLastName() == null || newPerson.getLastName().isBlank()) {
+			throw new PersonException("Le prénom et/ou le nom de la personne ne peuvent pas être vides.");
+		}
+		
+		if (newPerson.getAddress() == null || newPerson.getAddress().isBlank() || newPerson.getCity() == null || newPerson.getCity().isBlank() || newPerson.getZip() == null || newPerson.getZip().isBlank()) {
+			throw new PersonException("L'adresse de la personne ne peut pas être vide.");
+		}
+		
+		if (newPerson.getPhone() == null || newPerson.getPhone().isBlank()) {
+			throw new PersonException("Le numéro de téléphone de la personne ne peut pas être vide.");
+		}
+		
+		if (newPerson.getEmail() == null || newPerson.getEmail().isBlank()) {
+			throw new PersonException("L'email de la personne ne peut pas être vide.");
+		}
+		
 		 List<MedicalRecords> medicalRecords = medicalRecordsService.getAllMedicalRecords();
 		    boolean hasMedicalRecord = medicalRecords.stream().anyMatch(med ->
 		        med.getFirstName().equalsIgnoreCase(newPerson.getFirstName()) &&
@@ -59,31 +77,31 @@ public class PersonService {
 	}
 
 	// Mise à jour des données
-	public Person updatePerson(String firstName, String lastName, Person updatePerson) throws Exception {
+	public Person updatePerson(String firstName, String lastName, Person updatePerson) throws ResourceNotFoundException {
 		 if (!firstName.equalsIgnoreCase(updatePerson.getFirstName()) ||
 			        !lastName.equalsIgnoreCase(updatePerson.getLastName())) {
-			        throw new IllegalArgumentException("Prénom et nom de l'URL ne correspondent pas à ceux du corps de la requête.");
+			        throw new IllegalArgumentException("Le prénom et/ou le nom de l'URL ne correspondent pas à ceux du corps de la requête.");
 			    }
 		
 		return personRepository.updatePerson(firstName,lastName,updatePerson);
 	}
 
-	// Supression d'un medical record
-	public Person deletePerson(Person deletePerson) throws Exception {
-		Person deleted = personRepository.deletePerson(deletePerson);
-		 List<MedicalRecords> allMedicalRecords = medicalRecordsService.getAllMedicalRecords();
+	// Supression d'une personne
+	public void deletePerson(String firstName, String lastName) throws ResourceNotFoundException {
+		List<Person> allPersons = getAllPerson();
+		boolean removed = allPersons.removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
+		
+		/* List<MedicalRecords> allMedicalRecords = medicalRecordsService.getAllMedicalRecords();
 
 		    boolean medicalRecordExists = allMedicalRecords.stream()
 		            .anyMatch(record -> record.getFirstName().equalsIgnoreCase(deletePerson.getFirstName()) 
 		                               && record.getLastName().equalsIgnoreCase(deletePerson.getLastName()));
-
-		    if (medicalRecordExists) {
-		        medicalRecordsService.deleteMedicalRecord(deletePerson.getFirstName(), deletePerson.getLastName());
+*/
+		    if (removed) {
+		        personRepository.savePersonToJson(allPersons);
 		    } else {
-		    	 throw new RuntimeException ("Aucun dossier médical à supprimer pour " + deletePerson.getFirstName() + " " + deletePerson.getLastName());
+		    	 throw new ResourceNotFoundException ("Aucune personne ne correspond à cette requete");
 		    }
-
-	    return deleted;
 	}
 
 	/// URL

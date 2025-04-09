@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.Person;
 import com.openclassrooms.safetynetalerts.service.JsonService;
 
@@ -21,17 +22,17 @@ public class PersonRepository {
 	}
 	
 	// Recuperer toutes les personnes
-		public List<Person> getAllPerson() throws Exception {
+		public List<Person> getAllPerson() {
 			return jsonService.readJsonFromFile(new TypeReference<List<Person>>() {}, category);
 		}
 
 		// Sauvegarder un medical record en json
-		private void savePersonToJson(List<Person> allPersonList) {
+		public void savePersonToJson(List<Person> allPersonList) {
 			jsonService.writeJsonToFile(category, allPersonList);
 		}
 
 		// Ajouter un Person
-		public Person addPerson(Person newPerson) throws Exception {
+		public Person addPerson(Person newPerson) {
 			List<Person> allPersonList = getAllPerson();
 				allPersonList.add(newPerson);
 				savePersonToJson(allPersonList);
@@ -39,7 +40,7 @@ public class PersonRepository {
 		}
 
 		// Mise à jour des données
-		public Person updatePerson(String firstName, String lastName, Person updatePerson) throws Exception {
+		public Person updatePerson(String firstName, String lastName, Person updatePerson) {
 			List<Person> allPersonList = getAllPerson();
 			boolean isUpdated = false;
 
@@ -57,12 +58,12 @@ public class PersonRepository {
 				savePersonToJson(allPersonList);
 				return updatePerson;
 			} else {
-				throw new RuntimeException("Aucunes personnes correspondante trouvées.");
+				throw new ResourceNotFoundException("Aucunes personnes correspondante trouvées.");
 			}
 		}
 
 		// Supression d'un medical record
-		public Person deletePerson(Person deletePerson) throws Exception {
+		public Person deletePerson(Person deletePerson) {
 			List<Person> allPersonList = getAllPerson();
 			boolean isUpdated = false;
 
@@ -80,7 +81,7 @@ public class PersonRepository {
 				savePersonToJson(allPersonList);
 				return deletePerson;
 			} else {
-				throw new RuntimeException("Cette personne n'existe pas");
+				throw new ResourceNotFoundException("Cette personne n'existe pas");
 			}
 		}
 }

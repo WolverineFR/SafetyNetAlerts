@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openclassrooms.safetyalerts.exception.PersonException;
+import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.dto.ChildByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
@@ -41,35 +43,65 @@ public class PersonController {
 	}
 
 	@GetMapping("/person/all")
-	public List<Person> getAllPerson() throws Exception {
-		return personService.getAllPerson();
+	public ResponseEntity<List<Person>> getAllPerson() {
+		try {
+			List<Person> allPersons = personService.getAllPerson();
+			return ResponseEntity.ok(allPersons);
+		} catch (Exception e) {
+			logger.error("Erreur lors de la récupération des personnes : {}",e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
 	@PostMapping("/person")
-	public ResponseEntity<Person> addNewPerson(@Valid @RequestBody Person newPerson) throws Exception {
+	public ResponseEntity<Person> addNewPerson(@Valid @RequestBody Person newPerson) {
+		try {
 		Person addnewPerson = personService.addPerson(newPerson);
-		String PersonJson = objectMapper.writeValueAsString(newPerson);
+		String PersonJson = objectMapper.writeValueAsString(addnewPerson);
 		logger.info("La personne est enregistrée avec succès ! : " + PersonJson);
 		return ResponseEntity.status(HttpStatus.CREATED).body(addnewPerson);
+		} catch (PersonException e) {
+			logger.error("Erreur lors de l'ajout de la personne : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		} catch (Exception e) {
+			logger.error("Erreur inattendue lors de l'ajout de la personne : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
 	@PutMapping("/person/{firstName}/{lastName}")
 	public ResponseEntity<Person> updatePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
-			@Valid @RequestBody Person updatePerson) throws Exception {
+			@Valid @RequestBody Person updatePerson) {
+		try {
 		Person updateP = personService.updatePerson(firstName, lastName,updatePerson);
-		String PersonJson = objectMapper.writeValueAsString(updatePerson);
+		String PersonJson = objectMapper.writeValueAsString(updateP);
 		logger.info("La personne a été modifiée avec succès ! : " + PersonJson);
 		return ResponseEntity.status(HttpStatus.OK).body(updateP);
+		} catch (ResourceNotFoundException e) {
+			logger.error("Erreur lors de la modification des données de la personne : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (IllegalArgumentException e) {
+			logger.error("Erreur de correspondance des données : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		} catch (Exception e) {
+			logger.error("Erreur inattendue lors de la modification des données de la personne : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
 	@DeleteMapping("/person/{firstName}/{lastName}")
-	public ResponseEntity<Person> deletePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
-			Person deletePerson) throws Exception {
-		personService.deletePerson(deletePerson);
-		String PersonJson = objectMapper.writeValueAsString(deletePerson);
-		logger.info("Personne supprimé avec succès ! : " + PersonJson);
+	public ResponseEntity<Void> deletePerson(@Valid @PathVariable String firstName, @PathVariable String lastName) {
+		try {
+		personService.deletePerson(firstName, lastName);
+		logger.info("Personne supprimé avec succès ! : {} {}",firstName, lastName);
 		return ResponseEntity.noContent().build();
-
+		} catch (ResourceNotFoundException e) {
+			logger.error("Erreur lors de la suppression de la personne : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		} catch (Exception e) {
+			logger.error("Erreur inattendue lors de la suppression de la personne : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 	
 	// URL
