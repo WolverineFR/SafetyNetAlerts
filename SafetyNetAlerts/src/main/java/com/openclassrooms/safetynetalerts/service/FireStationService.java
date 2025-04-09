@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.openclassrooms.safetyalerts.exception.FireStationException;
-import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.FloodListOfStationNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonFireStationDTO;
+import com.openclassrooms.safetynetalerts.exception.FireStationException;
+import com.openclassrooms.safetynetalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.FireStation;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.model.Person;
@@ -59,8 +59,8 @@ public class FireStationService {
 
 	// Mise à jour des données
 	public FireStation updateFireStation(String address,int station ,FireStation updateFireStation) throws ResourceNotFoundException {
-		if (!address.equalsIgnoreCase(updateFireStation.getAddress()) || !(station == updateFireStation.getStation())) {
-			throw new IllegalArgumentException("Adresse et numéro de station de l'url ne correspondent pas à ceux du corps de la requete");
+		if (!address.equalsIgnoreCase(updateFireStation.getAddress())) {
+			throw new IllegalArgumentException("L'adresse de la caserne dans l'url ne correspond pas au corps de la requete");
 		}
 		return fireStationRepository.updateFireStation(address, station, updateFireStation);
 	}

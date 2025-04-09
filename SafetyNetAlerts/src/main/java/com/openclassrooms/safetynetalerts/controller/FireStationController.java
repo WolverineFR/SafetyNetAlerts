@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openclassrooms.safetyalerts.exception.FireStationException;
-import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
 import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.FloodListOfStationNumberDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonByAddressDTO;
+import com.openclassrooms.safetynetalerts.exception.FireStationException;
+import com.openclassrooms.safetynetalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.FireStation;
 import com.openclassrooms.safetynetalerts.service.FireStationService;
 
@@ -76,7 +76,7 @@ public class FireStationController {
 	public ResponseEntity<FireStation> updateFireStation(@Valid @PathVariable String address,@Valid @PathVariable int station,
 			@Valid @RequestBody FireStation updateFireStation) {
 		try {
-			FireStation updateFS = fireStationService.updateFireStation(address, 0, updateFireStation);
+			FireStation updateFS = fireStationService.updateFireStation(address, station, updateFireStation);
 			String fireStationJson = objectMapper.writeValueAsString(updateFireStation);
 			logger.info("Caserne de pompier modifiée avec succès ! : " + fireStationJson);
 			return ResponseEntity.status(HttpStatus.OK).body(updateFS);

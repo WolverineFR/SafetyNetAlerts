@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openclassrooms.safetyalerts.exception.MedicalRecordException;
-import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
+import com.openclassrooms.safetynetalerts.exception.MedicalRecordException;
+import com.openclassrooms.safetynetalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.service.MedicalRecordsService;
 

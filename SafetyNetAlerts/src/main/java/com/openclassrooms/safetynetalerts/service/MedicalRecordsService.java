@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.openclassrooms.safetyalerts.exception.MedicalRecordException;
-import com.openclassrooms.safetyalerts.exception.ResourceNotFoundException;
+import com.openclassrooms.safetynetalerts.exception.MedicalRecordException;
+import com.openclassrooms.safetynetalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.repository.MedicalRecordsRepository;
 

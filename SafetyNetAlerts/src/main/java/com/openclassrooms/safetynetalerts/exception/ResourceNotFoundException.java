@@ -1,4 +1,4 @@
-package com.openclassrooms.safetyalerts.exception;
+package com.openclassrooms.safetynetalerts.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

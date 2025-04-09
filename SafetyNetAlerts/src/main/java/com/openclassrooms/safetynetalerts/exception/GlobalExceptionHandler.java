@@ -1,4 +1,4 @@
-package com.openclassrooms.safetyalerts.exception;
+package com.openclassrooms.safetynetalerts.exception;
 
 import java.util.HashMap;
 import java.util.Map;
