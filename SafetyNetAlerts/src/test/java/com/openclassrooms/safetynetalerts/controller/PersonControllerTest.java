@@ -69,10 +69,11 @@ public class PersonControllerTest {
 		String email = "jean-martin@email.com";
 
 		Person updatePerson = new Person(firstName, lastName, address, city, zip, phone, email);
-		
+
 		when(personService.updatePerson(eq(firstName), eq(lastName), any(Person.class))).thenReturn(updatePerson);
-		
-		mockMvc.perform(put("/person/Jean/Martin").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(updatePerson))).andExpect(status().isOk());
+
+		mockMvc.perform(put("/person/Jean/Martin").contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(updatePerson))).andExpect(status().isOk());
 	}
 
 	@Test

@@ -64,7 +64,7 @@ public class MedicalRecordsControllerTest {
 		MedicalRecords updateMedicalRecord = new MedicalRecords(firstName, lastName, birthdate, medications, allergies);
 
 		when(medicalRecordsService.updateMedicalRecord(eq(firstName), eq(lastName), any(MedicalRecords.class)))
-        .thenReturn(updateMedicalRecord);
+				.thenReturn(updateMedicalRecord);
 
 		mockMvc.perform(put("/medicalrecord/Jean/Martin").contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateMedicalRecord))).andExpect(status().isOk());
@@ -73,14 +73,13 @@ public class MedicalRecordsControllerTest {
 
 	@Test
 	public void deleteMedicalRecordTest() throws Exception {
-	    String firstName = "Jean";
-	    String lastName = "Martin";
+		String firstName = "Jean";
+		String lastName = "Martin";
 
-	    mockMvc.perform(delete("/medicalrecord/{firstName}/{lastName}", firstName, lastName))
-	            .andExpect(status().isNoContent());
+		mockMvc.perform(delete("/medicalrecord/{firstName}/{lastName}", firstName, lastName))
+				.andExpect(status().isNoContent());
 
-	    verify(medicalRecordsService, times(1)).deleteMedicalRecord(eq(firstName), eq(lastName));
+		verify(medicalRecordsService, times(1)).deleteMedicalRecord(eq(firstName), eq(lastName));
 	}
-
 
 }
