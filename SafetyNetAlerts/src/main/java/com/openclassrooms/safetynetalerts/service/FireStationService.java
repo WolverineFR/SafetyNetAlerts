@@ -49,7 +49,7 @@ public class FireStationService {
 		}
 			List<FireStation> allFireStations = fireStationRepository.getAllFireStation();
 			
-			boolean alreadyExists = allFireStations.stream().anyMatch(record -> record.getAddress().equalsIgnoreCase(newFireStation.getAddress()));
+			boolean alreadyExists = allFireStations.stream().anyMatch(fs -> fs.getAddress().equalsIgnoreCase(newFireStation.getAddress()));
 			
 			if (alreadyExists) {
 				throw new FireStationException("Une caserne de pompier à cette adresse existe déjà.");
@@ -68,7 +68,7 @@ public class FireStationService {
 	// Supression d'un medical record
 	public void deleteFireStation( String address, int station) throws ResourceNotFoundException {
 	 List<FireStation> allFireStations = getAllFireStation();
-	 boolean removed = allFireStations.removeIf(firestation -> firestation.getAddress().equalsIgnoreCase(address) && (firestation.getStation() == station));
+	 boolean removed = allFireStations.removeIf(fs -> fs.getAddress().equalsIgnoreCase(address) && (fs.getStation() == station));
 		if (removed) {
 			fireStationRepository.saveFireStationToJson(allFireStations);
 		} else {
@@ -85,7 +85,7 @@ public class FireStationService {
 		List<FireStation> allFireStationList = getAllFireStation();
 
 		List<String> coveredAddresses = allFireStationList.stream()
-				.filter(fireStation -> fireStation.getStation() == stationNumber).map(FireStation::getAddress)
+				.filter(fs -> fs.getStation() == stationNumber).map(FireStation::getAddress)
 				.collect(Collectors.toList());
 
 		List<Person> persons = personService.getAllPerson();
@@ -123,7 +123,7 @@ public class FireStationService {
 		List<FireStation> allFireStationList = getAllFireStation();
 
 		List<String> coveredAddresses = allFireStationList.stream()
-				.filter(fireStation -> fireStation.getStation() == stationNumber).map(FireStation::getAddress)
+				.filter(fs -> fs.getStation() == stationNumber).map(FireStation::getAddress)
 				.collect(Collectors.toList());
 
 		List<Person> persons = personService.getAllPerson();
@@ -173,7 +173,7 @@ public class FireStationService {
 		List<MedicalRecords> getAllMedicalRecords = medicalRecordsService.getAllMedicalRecords();
 		
 		List<String> coveredAddresses = allFireStationList.stream()
-				.filter(fireStation -> fireStation.getStation() == stationNumber).map(FireStation::getAddress)
+				.filter(fs -> fs.getStation() == stationNumber).map(FireStation::getAddress)
 				.collect(Collectors.toList());
 
 		List<FloodListOfStationNumberDTO> filteredPersons = new ArrayList<>();

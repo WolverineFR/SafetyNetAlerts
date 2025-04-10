@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +22,14 @@ public class MedicalRecordsService {
 
 	@Autowired
 	private final MedicalRecordsRepository medicalRecordsRepository;
+	private final PersonService personService;
 	
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
 
-	public MedicalRecordsService(MedicalRecordsRepository medicalRecordsRepository) {
+	public MedicalRecordsService(MedicalRecordsRepository medicalRecordsRepository, @Lazy PersonService personService) {
 		this.medicalRecordsRepository = medicalRecordsRepository;
+		this.personService = personService;
 	}
 
 	// Recuperer tout les MedicalRecords
@@ -54,8 +57,8 @@ public class MedicalRecordsService {
 		List<MedicalRecords> allMedicalRecords = medicalRecordsRepository.getAllMedicalRecords();
 
 		boolean alreadyExists = allMedicalRecords.stream()
-				.anyMatch(record -> record.getFirstName().equalsIgnoreCase(newMedicalRecords.getFirstName())
-						&& record.getLastName().equalsIgnoreCase(newMedicalRecords.getLastName()));
+				.anyMatch(mr -> mr.getFirstName().equalsIgnoreCase(newMedicalRecords.getFirstName())
+						&& mr.getLastName().equalsIgnoreCase(newMedicalRecords.getLastName()));
 
 		if (alreadyExists) {
 			throw new MedicalRecordException("Un dossier médical existe déjà pour cette personne.");
@@ -78,13 +81,18 @@ public class MedicalRecordsService {
 	// Supression d'un medical record
 	public void deleteMedicalRecord(String firstName, String lastName) throws ResourceNotFoundException {
 		List<MedicalRecords> allMedicalRecords = getAllMedicalRecords();
-		boolean removed = allMedicalRecords.removeIf(record -> record.getFirstName().equalsIgnoreCase(firstName)
-				&& record.getLastName().equalsIgnoreCase(lastName));
+		boolean removed = allMedicalRecords.removeIf(mr -> mr.getFirstName().equalsIgnoreCase(firstName)
+				&& mr.getLastName().equalsIgnoreCase(lastName));
 
 		if (removed) {
 			medicalRecordsRepository.saveMedicalRecordsToJson(allMedicalRecords);
 		} else {
 			throw new ResourceNotFoundException("Aucun dossier médical trouvé pour cette personne.");
+		}
+		
+		try {
+		    personService.deletePerson(firstName, lastName);
+		} catch (ResourceNotFoundException e) {
 		}
 	}
 

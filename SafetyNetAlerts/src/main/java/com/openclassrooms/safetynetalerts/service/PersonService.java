@@ -37,7 +37,7 @@ public class PersonService {
 		return personRepository.getAllPerson();
 	}
 
-	// Ajouter un Person
+	// Ajouter une Personne
 	public Person addPerson(Person newPerson) throws PersonException {
 		if (newPerson.getFirstName() == null || newPerson.getFirstName().isBlank() || newPerson.getLastName() == null || newPerson.getLastName().isBlank()) {
 			throw new PersonException("Le prénom et/ou le nom de la personne ne peuvent pas être vides.");
@@ -56,9 +56,9 @@ public class PersonService {
 		}
 		
 		 List<MedicalRecords> medicalRecords = medicalRecordsService.getAllMedicalRecords();
-		    boolean hasMedicalRecord = medicalRecords.stream().anyMatch(med ->
-		        med.getFirstName().equalsIgnoreCase(newPerson.getFirstName()) &&
-		        med.getLastName().equalsIgnoreCase(newPerson.getLastName())
+		    boolean hasMedicalRecord = medicalRecords.stream().anyMatch(mr ->
+		        mr.getFirstName().equalsIgnoreCase(newPerson.getFirstName()) &&
+		        mr.getLastName().equalsIgnoreCase(newPerson.getLastName())
 		    );
 
 		    if (!hasMedicalRecord) {
@@ -91,12 +91,6 @@ public class PersonService {
 		List<Person> allPersons = getAllPerson();
 		boolean removed = allPersons.removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
 		
-		/* List<MedicalRecords> allMedicalRecords = medicalRecordsService.getAllMedicalRecords();
-
-		    boolean medicalRecordExists = allMedicalRecords.stream()
-		            .anyMatch(record -> record.getFirstName().equalsIgnoreCase(deletePerson.getFirstName()) 
-		                               && record.getLastName().equalsIgnoreCase(deletePerson.getLastName()));
-*/
 		    if (removed) {
 		        personRepository.savePersonToJson(allPersons);
 		    } else {
