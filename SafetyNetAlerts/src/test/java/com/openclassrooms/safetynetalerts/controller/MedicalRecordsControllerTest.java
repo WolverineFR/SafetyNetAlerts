@@ -71,5 +71,16 @@ public class MedicalRecordsControllerTest {
 
 	}
 
+	@Test
+	public void deleteMedicalRecordTest() throws Exception {
+	    String firstName = "Jean";
+	    String lastName = "Martin";
+
+	    mockMvc.perform(delete("/medicalrecord/{firstName}/{lastName}", firstName, lastName))
+	            .andExpect(status().isNoContent());
+
+	    verify(medicalRecordsService, times(1)).deleteMedicalRecord(eq(firstName), eq(lastName));
+	}
+
 
 }
