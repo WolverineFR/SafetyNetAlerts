@@ -92,7 +92,7 @@ public class PersonService {
 
 	// Supression d'une personne
 	public void deletePerson(String firstName, String lastName) throws ResourceNotFoundException {
-		List<Person> allPersons = getAllPerson();
+		List<Person> allPersons = new ArrayList<>(getAllPerson());
 		boolean removed = allPersons.removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName)
 				&& person.getLastName().equalsIgnoreCase(lastName));
 
