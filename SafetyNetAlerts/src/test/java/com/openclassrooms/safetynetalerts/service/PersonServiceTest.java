@@ -112,4 +112,53 @@ public class PersonServiceTest {
 		assertThrows(ResourceNotFoundException.class, () -> personService.deletePerson("Jean", "Martin"));
 	}
 
+	// TESTS DES URLS
+
+	@Test
+	void getChildrenByAddressTest() throws Exception {
+		Person person1 = new Person("Jean", "Martin", "1 rue des fleurs", "Paris", "75001", "0601020304",
+				"jean.martin@email.com");
+		Person person2 = new Person("Pierre", "Martin", "1 rue des fleurs", "Paris", "75001", "0601020304",
+				"pierre-dupont@email.com");
+
+		MedicalRecords medicalRecord1 = new MedicalRecords("Jean", "Martin", "01/01/1990", null, null);
+		MedicalRecords medicalRecord2 = new MedicalRecords("Pierre", "Martin", "03/05/2015", null, null);
+
+		when(personRepository.getAllPerson()).thenReturn(List.of(person1, person2));
+		when(medicalRecordsService.getAllMedicalRecords()).thenReturn(List.of(medicalRecord1, medicalRecord2));
+
+		List<ChildByAddressDTO> children = personService.getChildrenByAddress("1 rue des fleurs");
+
+		assertNotNull(children);
+		assertEquals(2, children.size());
+	}
+
+	@Test
+	void getPersonInfoByLastNameTest() throws Exception {
+		Person person = new Person("Jean", "Martin", "1 rue des fleurs", "Paris", "75001", "0601020304",
+				"jean.martin@email.com");
+		MedicalRecords medicalRecord = new MedicalRecords("Jean", "Martin", "01/01/1990", null, null);
+
+		when(personRepository.getAllPerson()).thenReturn(List.of(person));
+		when(medicalRecordsService.getAllMedicalRecords()).thenReturn(List.of(medicalRecord));
+
+		List<PersonInfoLastNameDTO> personInfo = personService.getPersonInfoByLastName("Martin");
+
+		assertNotNull(personInfo);
+		assertEquals(1, personInfo.size());
+	}
+
+	@Test
+	void getEmailOfAllPersonByCityTest() throws Exception {
+		Person person = new Person("Jean", "Martin", "1 rue des fleurs", "Paris", "75001", "0601020304",
+				"jean.martin@email.com");
+
+		when(personRepository.getAllPerson()).thenReturn(List.of(person));
+
+		EmailOfAllPersonDTO result = personService.getEmailOfAllPersonByCity("Paris");
+
+		assertNotNull(result);
+		assertEquals(person.getEmail(), "jean.martin@email.com");
+	}
+
 }
