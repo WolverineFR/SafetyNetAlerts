@@ -41,20 +41,17 @@ public class PersonControllerTest {
 
 	@MockBean
 	private PersonService personService;
-	
+
 	@Test
-	public void getAllPerson_ReturnsOk() throws Exception {
-	    List<Person> personList = Arrays.asList(
-	        new Person("Jean", "Martin", "1 rue des fleurs", "Paris", "75001", "0601020304", "jean@email.com"),
-	        new Person("Marie", "Dupont", "10 rue des roses", "Lyon", "69001", "0605060708", "marie@email.com"));
+	public void getAllPersonTest() throws Exception {
+		List<Person> personList = Arrays.asList(
+				new Person("Jean", "Martin", "1 rue des fleurs", "Paris", "75001", "0601020304", "jean@email.com"),
+				new Person("Marie", "Dupont", "10 rue des roses", "Lyon", "69001", "0605060708", "marie@email.com"));
 
-	    when(personService.getAllPerson()).thenReturn(personList);
+		when(personService.getAllPerson()).thenReturn(personList);
 
-	    mockMvc.perform(get("/person/all"))
-	            .andExpect(status().isOk())
-	            .andExpect(jsonPath("$.length()").value(2));
+		mockMvc.perform(get("/person/all")).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(2));
 	}
-
 
 	@Test
 	public void addNewPersonTest() throws Exception {
@@ -103,47 +100,77 @@ public class PersonControllerTest {
 
 		verify(personService, times(1)).deletePerson(firstName, lastName);
 	}
-	
+
 	@Test
-	public void addNewPerson_WithPersonException_ReturnsBadRequest() throws Exception {
-	    Person invalidPerson = new Person("", "Martin", "", "Paris", "", "0102030405", "bonjour@email.com");
+	public void addNewPersonBadRequestExceptionTest() throws Exception {
+		Person invalidPerson = new Person("", "Martin", "", "Paris", "", "0102030405", "bonjour@email.com");
 
-	    when(personService.addPerson(any(Person.class))).thenThrow(new PersonException("Les champs ne doivent pas être vides."));
+		when(personService.addPerson(any(Person.class)))
+				.thenThrow(new PersonException("Les champs ne doivent pas être vides."));
 
-	    mockMvc.perform(post("/person")
-	            .contentType(MediaType.APPLICATION_JSON)
-	            .content(new ObjectMapper().writeValueAsString(invalidPerson)))
-	            .andExpect(status().isBadRequest());
-	}
-	
-	@Test
-	public void updatePerson_WithResourceNotFoundException_ReturnsNotFound() throws Exception {
-	    Person updatedPerson = new Person("Jean", "Martin", "20 rue des plantes", "Paris", "75015", "0605040302", "jean@email.com");
-
-	    when(personService.updatePerson(eq("Jean"), eq("Martin"), any(Person.class)))
-	            .thenThrow(new ResourceNotFoundException("Aucune personne ne correspond"));
-
-	    mockMvc.perform(put("/person/Jean/Martin")
-	            .contentType(MediaType.APPLICATION_JSON)
-	            .content(new ObjectMapper().writeValueAsString(updatedPerson)))
-	            .andExpect(status().isNotFound());
-	}
-	
-	@Test
-	public void deletePerson_WithResourceNotFoundException_ReturnsNotFound() throws Exception {
-	    String firstName = "Jean";
-	    String lastName = "Martin";
-
-	    doThrow(new ResourceNotFoundException("Personne non trouvée")).when(personService)
-	            .deletePerson(eq(firstName), eq(lastName));
-
-	    mockMvc.perform(delete("/person/{firstName}/{lastName}", firstName, lastName))
-	            .andExpect(status().isNotFound());
-
-	    verify(personService, times(1)).deletePerson(eq(firstName), eq(lastName));
+		mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(invalidPerson))).andExpect(status().isBadRequest());
 	}
 
+	@Test
+	public void addNewPersonErrorExceptionTest() throws Exception {
+		Person person = new Person("Jean", "Martin", "1 rue des fleurs", "Paris", "75001", "0601020304",
+				"jean@email.com");
 
+		when(personService.addPerson(any(Person.class))).thenThrow(new RuntimeException("Erreur inattendue"));
 
+		mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(person))).andExpect(status().isInternalServerError());
+	}
+
+	@Test
+	public void updatePersonNotFoundExceptionTest() throws Exception {
+		Person updatedPerson = new Person("Jean", "Martin", "20 rue des plantes", "Paris", "75015", "0605040302",
+				"jean@email.com");
+
+		when(personService.updatePerson(eq("Jean"), eq("Martin"), any(Person.class)))
+				.thenThrow(new ResourceNotFoundException("Aucune personne ne correspond"));
+
+		mockMvc.perform(put("/person/Jean/Martin").contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(updatedPerson))).andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void updatePersonErrorExceptionTest() throws Exception {
+		Person updatedPerson = new Person("Jean", "Martin", "20 rue des plantes", "Paris", "75015", "0605040302",
+				"jean@email.com");
+
+		when(personService.updatePerson(eq("Jean"), eq("Martin"), any(Person.class)))
+				.thenThrow(new RuntimeException("Erreur inattendue"));
+
+		mockMvc.perform(put("/person/Jean/Martin").contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(updatedPerson)))
+				.andExpect(status().isInternalServerError());
+	}
+
+	@Test
+	public void deletePersonNotFoundExceptionTest() throws Exception {
+		String firstName = "Jean";
+		String lastName = "Martin";
+
+		doThrow(new ResourceNotFoundException("Personne non trouvée")).when(personService).deletePerson(eq(firstName),
+				eq(lastName));
+
+		mockMvc.perform(delete("/person/{firstName}/{lastName}", firstName, lastName)).andExpect(status().isNotFound());
+
+		verify(personService, times(1)).deletePerson(eq(firstName), eq(lastName));
+	}
+
+	@Test
+	public void deletePersonErrorExceptionTest() throws Exception {
+		String firstName = "Jean";
+		String lastName = "Martin";
+
+		doThrow(new RuntimeException("Erreur inattendue")).when(personService).deletePerson(eq(firstName),
+				eq(lastName));
+
+		mockMvc.perform(delete("/person/{firstName}/{lastName}", firstName, lastName))
+				.andExpect(status().isInternalServerError());
+	}
 
 }
