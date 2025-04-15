@@ -26,18 +26,17 @@ import com.openclassrooms.safetynetalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.Person;
 import com.openclassrooms.safetynetalerts.service.PersonService;
 
-
 import jakarta.validation.Valid;
 
 @RestController
 public class PersonController {
-	
+
 	private PersonService personService;
 	private static final Logger logger = LogManager.getLogger(PersonService.class);
 	private final ObjectMapper objectMapper;
-	
+
 	@Autowired
-	public PersonController (PersonService personService, ObjectMapper objectMapper) {
+	public PersonController(PersonService personService, ObjectMapper objectMapper) {
 		this.personService = personService;
 		this.objectMapper = objectMapper;
 	}
@@ -48,7 +47,7 @@ public class PersonController {
 			List<Person> allPersons = personService.getAllPerson();
 			return ResponseEntity.ok(allPersons);
 		} catch (Exception e) {
-			logger.error("Erreur lors de la récupération des personnes : {}",e.getMessage());
+			logger.error("Erreur lors de la récupération des personnes : {}", e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
@@ -56,10 +55,10 @@ public class PersonController {
 	@PostMapping("/person")
 	public ResponseEntity<Person> addNewPerson(@Valid @RequestBody Person newPerson) {
 		try {
-		Person addnewPerson = personService.addPerson(newPerson);
-		String PersonJson = objectMapper.writeValueAsString(addnewPerson);
-		logger.info("La personne est enregistrée avec succès ! : " + PersonJson);
-		return ResponseEntity.status(HttpStatus.CREATED).body(addnewPerson);
+			Person addnewPerson = personService.addPerson(newPerson);
+			String PersonJson = objectMapper.writeValueAsString(addnewPerson);
+			logger.info("La personne est enregistrée avec succès ! : " + PersonJson);
+			return ResponseEntity.status(HttpStatus.CREATED).body(addnewPerson);
 		} catch (PersonException e) {
 			logger.error("Erreur lors de l'ajout de la personne : {}", e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -73,10 +72,10 @@ public class PersonController {
 	public ResponseEntity<Person> updatePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
 			@Valid @RequestBody Person updatePerson) {
 		try {
-		Person updateP = personService.updatePerson(firstName, lastName,updatePerson);
-		String PersonJson = objectMapper.writeValueAsString(updateP);
-		logger.info("La personne a été modifiée avec succès ! : " + PersonJson);
-		return ResponseEntity.status(HttpStatus.OK).body(updateP);
+			Person updateP = personService.updatePerson(firstName, lastName, updatePerson);
+			String PersonJson = objectMapper.writeValueAsString(updateP);
+			logger.info("La personne a été modifiée avec succès ! : " + PersonJson);
+			return ResponseEntity.status(HttpStatus.OK).body(updateP);
 		} catch (ResourceNotFoundException e) {
 			logger.error("Erreur lors de la modification des données de la personne : {}", e.getMessage());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -92,9 +91,9 @@ public class PersonController {
 	@DeleteMapping("/person/{firstName}/{lastName}")
 	public ResponseEntity<Void> deletePerson(@Valid @PathVariable String firstName, @PathVariable String lastName) {
 		try {
-		personService.deletePerson(firstName, lastName);
-		logger.info("Personne supprimé avec succès ! : {} {}",firstName, lastName);
-		return ResponseEntity.noContent().build();
+			personService.deletePerson(firstName, lastName);
+			logger.info("Personne supprimé avec succès ! : {} {}", firstName, lastName);
+			return ResponseEntity.noContent().build();
 		} catch (ResourceNotFoundException e) {
 			logger.error("Erreur lors de la suppression de la personne : {}", e.getMessage());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -103,24 +102,42 @@ public class PersonController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	
+
 	// URL
-	
+
 	@GetMapping("childAlert")
 	public List<ChildByAddressDTO> getChildrenByAddress(String address) throws Exception {
 		return personService.getChildrenByAddress(address);
 	}
-	
+
 	@GetMapping("/personInfo")
-	public List<PersonInfoLastNameDTO> getPersonInfoByLastName(@RequestParam String lastName) throws Exception {
-		return personService.getPersonInfoByLastName(lastName);
-		
+	public ResponseEntity<List<PersonInfoLastNameDTO>> getPersonInfoByLastName(@RequestParam String lastName) {
+		try {
+			List<PersonInfoLastNameDTO> personInfoList = personService.getPersonInfoByLastName(lastName);
+			logger.info("Infos récupérées avec succès pour les personnes portant le nom : {}", lastName);
+			return ResponseEntity.ok(personInfoList);
+		} catch (ResourceNotFoundException e) {
+			logger.error("Erreur 404 : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (Exception e) {
+			logger.error("Erreur inattendue dans /personInfo : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
-	
+
 	@GetMapping("/communityEmail")
-	public EmailOfAllPersonDTO getEmailOfAllPersonByCity(@RequestParam String city) throws Exception {
-		return personService.getEmailOfAllPersonByCity(city);
-		
+	public ResponseEntity<EmailOfAllPersonDTO> getEmailOfAllPersonByCity(@RequestParam String city) {
+		try {
+			EmailOfAllPersonDTO emailList = personService.getEmailOfAllPersonByCity(city);
+			logger.info("Liste des emails récupérée avec succès pour la ville : {}", city);
+			return ResponseEntity.ok(emailList);
+		} catch (ResourceNotFoundException e) {
+			logger.error("Erreur 404 : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (Exception e) {
+			logger.error("Erreur inattendue dans /communityEmail : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
 }

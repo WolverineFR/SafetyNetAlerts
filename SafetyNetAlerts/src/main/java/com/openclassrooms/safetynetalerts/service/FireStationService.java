@@ -87,6 +87,10 @@ public class FireStationService {
 		List<String> coveredAddresses = allFireStationList.stream()
 				.filter(fs -> fs.getStation() == stationNumber).map(FireStation::getAddress)
 				.collect(Collectors.toList());
+		
+		if (coveredAddresses.isEmpty()) {
+	        throw new ResourceNotFoundException("Aucune caserne trouvée pour le numéro : " + stationNumber);
+	    }
 
 		List<Person> persons = personService.getAllPerson();
 		List<MedicalRecords> medicalRecords = medicalRecordsService.getAllMedicalRecords();
@@ -125,6 +129,10 @@ public class FireStationService {
 		List<String> coveredAddresses = allFireStationList.stream()
 				.filter(fs -> fs.getStation() == stationNumber).map(FireStation::getAddress)
 				.collect(Collectors.toList());
+		
+		if (coveredAddresses.isEmpty()) {
+	        throw new ResourceNotFoundException("Aucune caserne trouvée pour le numéro : " + stationNumber);
+	    }
 
 		List<Person> persons = personService.getAllPerson();
 		List<String> filteredPersons = new ArrayList<>();
@@ -142,6 +150,13 @@ public class FireStationService {
 		List<FireStation> allFireStationList = getAllFireStation();
 		List<Person> getAllPerson = personService.getAllPerson();
 		List<MedicalRecords> getAllMedicalRecords = medicalRecordsService.getAllMedicalRecords();
+		
+		boolean addressExists = allFireStationList.stream()
+	            .anyMatch(fs -> fs.getAddress().equalsIgnoreCase(address));
+
+	    if (!addressExists) {
+	        throw new ResourceNotFoundException("Aucune caserne trouvée pour l'adresse : " + address);
+	    }
 
 		List<PersonByAddressDTO> filteredPersons = new ArrayList<>();
 
@@ -175,6 +190,10 @@ public class FireStationService {
 		List<String> coveredAddresses = allFireStationList.stream()
 				.filter(fs -> fs.getStation() == stationNumber).map(FireStation::getAddress)
 				.collect(Collectors.toList());
+		
+		if (coveredAddresses.isEmpty()) {
+	        throw new ResourceNotFoundException("Aucune caserne trouvée pour le numéro : " + stationNumber);
+	    }
 
 		List<FloodListOfStationNumberDTO> filteredPersons = new ArrayList<>();
 		

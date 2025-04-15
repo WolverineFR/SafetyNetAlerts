@@ -145,9 +145,11 @@ public class PersonService {
 		List<MedicalRecords> getAllMedicalRecords = medicalRecordsService.getAllMedicalRecords();
 
 		List<PersonInfoLastNameDTO> filteredPersons = new ArrayList<>();
+		boolean matchFound = false;
 
 		for (Person person : getAllPerson) {
 			if (lastName.equals(person.getLastName())) {
+				matchFound = true;
 				for (MedicalRecords medicalRecord : getAllMedicalRecords) {
 					if (person.getLastName().equals(medicalRecord.getLastName())) {
 						int age = medicalRecordsService.calculateAge(medicalRecord);
@@ -157,6 +159,9 @@ public class PersonService {
 					}
 				}
 			}
+		}
+		if (!matchFound) {
+			throw new ResourceNotFoundException("Aucune personne trouvée avec le nom : " + lastName);
 		}
 
 		return filteredPersons;
@@ -171,6 +176,9 @@ public class PersonService {
 		for (Person person : getAllPerson) {
 			if (city.contains(person.getCity())) {
 				filteredPersons.add(person.getEmail());
+			}
+			if (filteredPersons.isEmpty()) {
+				throw new ResourceNotFoundException("Aucune personne trouvée avec la ville : " + city);
 			}
 		}
 

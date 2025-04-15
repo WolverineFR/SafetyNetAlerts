@@ -48,7 +48,7 @@ public class FireStationController {
 		try {
 			List<FireStation> allFireStations = fireStationService.getAllFireStation();
 			return ResponseEntity.ok(allFireStations);
-		} catch (Exception e){
+		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
@@ -59,7 +59,7 @@ public class FireStationController {
 			FireStation addNewFS = fireStationService.addFireStation(newFireStation);
 			String fireStationJson = objectMapper.writeValueAsString(newFireStation);
 			logger.info("Caserne de pompier enregistrée avec succès ! : " + fireStationJson);
-			
+
 			return ResponseEntity.status(HttpStatus.CREATED).body(addNewFS);
 		} catch (FireStationException e) {
 			logger.error("Erreur lors de l'ajout de la caserne de pompier : {}", e.getMessage());
@@ -95,12 +95,13 @@ public class FireStationController {
 	}
 
 	@DeleteMapping("/firestation/{address}/{station}")
-	public ResponseEntity<Void> deleteFireStation( @PathVariable String address, @PathVariable int station,
+	public ResponseEntity<Void> deleteFireStation(@PathVariable String address, @PathVariable int station,
 			FireStation deleteFireStation) {
 		try {
 			fireStationService.deleteFireStation(address, station);
-			logger.info("Caserne de pompier supprimée avec succès ! Adresse : {}, Station numéro : {}",address, station);
-			
+			logger.info("Caserne de pompier supprimée avec succès ! Adresse : {}, Station numéro : {}", address,
+					station);
+
 			return ResponseEntity.noContent().build();
 		} catch (ResourceNotFoundException e) {
 			logger.error("Erreur lors de la suppression de la caserne de pompier : {}", e.getMessage());
@@ -115,25 +116,61 @@ public class FireStationController {
 
 	// URL
 	@GetMapping("/firestation")
-	public FireStationCoverageDTO getPersonsByStationNumber(@RequestParam int stationNumber) throws Exception {
-		return fireStationService.getPersonsByStationNumber(stationNumber);
+	public ResponseEntity<FireStationCoverageDTO> getPersonsByStationNumber(@RequestParam int stationNumber) {
+		try {
+			FireStationCoverageDTO result = fireStationService.getPersonsByStationNumber(stationNumber);
+			return ResponseEntity.ok(result);
+		} catch (ResourceNotFoundException e) {
+			logger.error("Aucune caserne trouvée pour le numéro : {}", stationNumber);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (Exception e) {
+			logger.error("Erreur inattendue sur /firestation : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
 	@GetMapping("/phoneAlert")
-	public FireStationCoveragePhoneNumberDTO getPhoneNumberByStationNumber(@RequestParam int firestation)
-			throws Exception {
-		return fireStationService.getPhoneNumberByStationNumber(firestation);
+	public ResponseEntity<FireStationCoveragePhoneNumberDTO> getPhoneNumberByStationNumber(
+			@RequestParam int firestation) {
+		try {
+			FireStationCoveragePhoneNumberDTO result = fireStationService.getPhoneNumberByStationNumber(firestation);
+			return ResponseEntity.ok(result);
+		} catch (ResourceNotFoundException e) {
+			logger.error("Erreur 404 : {}", firestation);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (Exception e) {
+			logger.error("Erreur inattendue sur /phoneAlert : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
-	@GetMapping("fire")
-	public List<PersonByAddressDTO> getPersonByAddress(@RequestParam String address) throws Exception {
-		return fireStationService.getPersonByAddress(address);
+	@GetMapping("/fire")
+	public ResponseEntity<List<PersonByAddressDTO>> getPersonByAddress(@RequestParam String address) {
+		try {
+			List<PersonByAddressDTO> result = fireStationService.getPersonByAddress(address);
+			return ResponseEntity.ok(result);
+		} catch (ResourceNotFoundException e) {
+			logger.error("Erreur 404 : {}", address);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (Exception e) {
+			logger.error("Erreur inattendue sur /fire : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
-	@GetMapping("flood/station")
-	public List<FloodListOfStationNumberDTO> getPersonByListOfStationNumber(@RequestParam int firestation)
-			throws Exception {
-		return fireStationService.getPersonByListOfStationNumber(firestation);
+	@GetMapping("/flood/station")
+	public ResponseEntity<List<FloodListOfStationNumberDTO>> getPersonByListOfStationNumber(
+			@RequestParam int firestation) {
+		try {
+			List<FloodListOfStationNumberDTO> result = fireStationService.getPersonByListOfStationNumber(firestation);
+			return ResponseEntity.ok(result);
+		} catch (ResourceNotFoundException e) {
+			logger.error("Erreur 404 : {}", firestation);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (Exception e) {
+			logger.error("Erreur inattendue sur /flood/station : {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
 }
