@@ -23,9 +23,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openclassrooms.safetynetalerts.dto.FireStationCoverageDTO;
+import com.openclassrooms.safetynetalerts.dto.FireStationCoveragePhoneNumberDTO;
+import com.openclassrooms.safetynetalerts.dto.FloodListOfStationNumberDTO;
+import com.openclassrooms.safetynetalerts.dto.PersonByAddressDTO;
+import com.openclassrooms.safetynetalerts.dto.PersonFireStationDTO;
 import com.openclassrooms.safetynetalerts.exception.FireStationException;
 import com.openclassrooms.safetynetalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.FireStation;
+import com.openclassrooms.safetynetalerts.model.Person;
 import com.openclassrooms.safetynetalerts.service.FireStationService;
 
 @WebMvcTest(FireStationController.class)
@@ -146,6 +152,163 @@ public class FireStationControllerTest {
 
 		mockMvc.perform(delete("/firestation/{address}/{station}", address, station))
 				.andExpect(status().isInternalServerError());
+	}
+
+	// URLs
+
+	@Test
+	public void getPersonsByStationNumberTest() throws Exception {
+		int stationNumber = 1;
+
+		PersonFireStationDTO person1 = new PersonFireStationDTO("Jean", "Martin", "1 rue des fleurs", "0601020304");
+		PersonFireStationDTO person2 = new PersonFireStationDTO("Pierre", "Durant", "1 rue des roses", "0703020104");
+
+		List<PersonFireStationDTO> persons = List.of(person1, person2);
+
+		FireStationCoverageDTO coverageDTO = new FireStationCoverageDTO(persons, 1, 1); // 1 adulte, 1 enfant
+
+		when(fireStationService.getPersonsByStationNumber(stationNumber)).thenReturn(coverageDTO);
+
+		mockMvc.perform(get("/firestation").param("stationNumber", String.valueOf(stationNumber)))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.numberOfAdults").value(1))
+				.andExpect(jsonPath("$.numberOfChildren").value(1))
+				.andExpect(jsonPath("$.persons[0].firstName").value("Jean"))
+				.andExpect(jsonPath("$.persons[0].lastName").value("Martin"))
+				.andExpect(jsonPath("$.persons[0].address").value("1 rue des fleurs"))
+				.andExpect(jsonPath("$.persons[0].phone").value("0601020304"))
+				.andExpect(jsonPath("$.persons[1].firstName").value("Pierre"))
+				.andExpect(jsonPath("$.persons[1].lastName").value("Durant"))
+				.andExpect(jsonPath("$.persons[1].address").value("1 rue des roses"))
+				.andExpect(jsonPath("$.persons[1].phone").value("0703020104"));
+	}
+
+	@Test
+	public void getPersonsByStationNumberNotFoundTest() throws Exception {
+		int stationNumber = 1;
+
+		when(fireStationService.getPersonsByStationNumber(stationNumber))
+				.thenThrow(new ResourceNotFoundException("Station non trouvée"));
+
+		mockMvc.perform(get("/firestation").param("stationNumber", String.valueOf(stationNumber)))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void getPersonsByStationNumberErrorTest() throws Exception {
+		int stationNumber = 1;
+
+		when(fireStationService.getPersonsByStationNumber(stationNumber))
+				.thenThrow(new RuntimeException("Erreur serveur"));
+
+		mockMvc.perform(get("/firestation").param("stationNumber", String.valueOf(stationNumber)))
+				.andExpect(status().isInternalServerError());
+	}
+
+	@Test
+	public void getPhoneNumberByStationNumberTest() throws Exception {
+		int stationNumber = 3;
+		List<String> phoneNumbers = List.of("0601020304", "0704050607");
+
+		FireStationCoveragePhoneNumberDTO dto = new FireStationCoveragePhoneNumberDTO(phoneNumbers);
+
+		when(fireStationService.getPhoneNumberByStationNumber(stationNumber)).thenReturn(dto);
+
+		mockMvc.perform(get("/phoneAlert").param("firestation", String.valueOf(stationNumber)))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.phone.length()").value(2))
+				.andExpect(jsonPath("$.phone[0]").value("0601020304"))
+				.andExpect(jsonPath("$.phone[1]").value("0704050607"));
+	}
+
+	@Test
+	public void getPhoneNumberByStationNumberNotFoundTest() throws Exception {
+		int stationNumber = 5;
+
+		when(fireStationService.getPhoneNumberByStationNumber(stationNumber))
+				.thenThrow(new ResourceNotFoundException("Station non trouvée"));
+
+		mockMvc.perform(get("/phoneAlert").param("firestation", String.valueOf(stationNumber)))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void getPhoneNumberByStationNumberErrorTest() throws Exception {
+		int stationNumber = 5;
+
+		when(fireStationService.getPhoneNumberByStationNumber(stationNumber))
+				.thenThrow(new RuntimeException("Erreur serveur"));
+
+		mockMvc.perform(get("/phoneAlert").param("firestation", String.valueOf(stationNumber)))
+				.andExpect(status().isInternalServerError());
+	}
+
+	@Test
+	public void getPersonByAddressTest() throws Exception {
+		String address = "1509 Culver St";
+
+		PersonByAddressDTO person1 = new PersonByAddressDTO(3, "John", "Boyd", "841-874-6512", 36,
+				List.of("aznol:350mg", "hydrapermazol:100mg"), List.of("nillacilan"));
+
+		PersonByAddressDTO person2 = new PersonByAddressDTO(3, "Jacob", "Boyd", "841-874-6513", 31, List.of(),
+				List.of());
+
+		List<PersonByAddressDTO> people = List.of(person1, person2);
+
+		when(fireStationService.getPersonByAddress(address)).thenReturn(people);
+
+		mockMvc.perform(get("/fire").param("address", address)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(2)).andExpect(jsonPath("$[0].firstName").value("John"))
+				.andExpect(jsonPath("$[0].medications[0]").value("aznol:350mg"))
+				.andExpect(jsonPath("$[1].lastName").value("Boyd"));
+	}
+
+	@Test
+	public void getPersonByAddressNotFoundTest() throws Exception {
+		String address = "Adresse inconnue";
+
+		when(fireStationService.getPersonByAddress(address))
+				.thenThrow(new ResourceNotFoundException("Adresse introuvable"));
+
+		mockMvc.perform(get("/fire").param("address", address)).andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void getPersonByAddressErrorTest() throws Exception {
+		String address = "Erreur";
+
+		when(fireStationService.getPersonByAddress(address)).thenThrow(new RuntimeException("Erreur serveur"));
+
+		mockMvc.perform(get("/fire").param("address", address)).andExpect(status().isInternalServerError());
+	}
+
+	@Test
+	public void getPersonByListOfStationNumberTest() throws Exception {
+		int station = 1;
+
+		FloodListOfStationNumberDTO person1 = new FloodListOfStationNumberDTO("John", "Doe", "1509 Culver St",
+				"841-874-6512", 36, List.of("aznol:350mg"), List.of("nillacilan"));
+
+		FloodListOfStationNumberDTO person2 = new FloodListOfStationNumberDTO("Jane", "Doe", "1509 Culver St",
+				"841-874-6513", 34, List.of("hydrapermazol:100mg"), List.of());
+
+		List<FloodListOfStationNumberDTO> persons = List.of(person1, person2);
+
+		when(fireStationService.getPersonByListOfStationNumber(station)).thenReturn(persons);
+
+		mockMvc.perform(get("/flood/station").param("firestation", String.valueOf(station))).andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(2)).andExpect(jsonPath("$[0].firstName").value("John"))
+				.andExpect(jsonPath("$[1].medications[0]").value("hydrapermazol:100mg"))
+				.andExpect(jsonPath("$[0].allergies[0]").value("nillacilan"));
+	}
+
+	@Test
+	public void getPersonByListOfStationNumberNotFoundTest() throws Exception {
+		int station = 10;
+
+		when(fireStationService.getPersonByListOfStationNumber(station))
+				.thenThrow(new ResourceNotFoundException("Station introuvable"));
+
+		mockMvc.perform(get("/flood/station").param("firestation", String.valueOf(station)))
+				.andExpect(status().isNotFound());
 	}
 
 }
