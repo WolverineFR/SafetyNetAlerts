@@ -30,6 +30,12 @@ import com.openclassrooms.safetynetalerts.service.FireStationService;
 
 import jakarta.validation.Valid;
 
+/**
+ * Contrôleur REST pour gérer les opérations liées aux casernes de pompiers.
+ * Fournit des endpoints pour la création, la mise à jour, la suppression et la consultation
+ * des casernes de pompiers, ainsi que des fonctionnalités spécifiques comme la couverture
+ * d'une station, les numéros de téléphone des personnes couvertes, etc.
+ */
 @RestController
 public class FireStationController {
 
@@ -43,6 +49,11 @@ public class FireStationController {
 		this.objectMapper = objectMapper;
 	}
 
+	 /**
+     * Récupère toutes les casernes de pompiers.
+     *
+     * @return la liste de toutes les FireStation
+     */
 	@GetMapping("/firestation/all")
 	public ResponseEntity<List<FireStation>> getAllFireStation() {
 		try {
@@ -53,6 +64,12 @@ public class FireStationController {
 		}
 	}
 
+	/**
+     * Ajoute une nouvelle caserne de pompiers.
+     *
+     * @param newFireStation : la nouvelle FireStation à enregistrer
+     * @return la caserne ajoutée
+     */
 	@PostMapping("/firestation")
 	public ResponseEntity<FireStation> addNewFireStation(@Valid @RequestBody FireStation newFireStation) {
 		try {
@@ -72,6 +89,13 @@ public class FireStationController {
 		}
 	}
 
+	 /**
+     * Met à jour une caserne de pompiers existante à partir de son adresse.
+     *
+     * @param address : l'adresse de la caserne à mettre à jour
+     * @param updateFireStation : les nouvelles données à appliquer
+     * @return la caserne mise à jour
+     */
 	@PutMapping("/firestation/{address}")
 	public ResponseEntity<FireStation> updateFireStation(@Valid @PathVariable String address,
 			@Valid @RequestBody FireStation updateFireStation) {
@@ -94,6 +118,13 @@ public class FireStationController {
 		}
 	}
 
+	/**
+     * Supprime une caserne de pompiers par son adresse et numéro de station.
+     *
+     * @param address : l'adresse de la caserne
+     * @param station : le numéro de la station
+     * @return un statut HTTP indiquant le succès ou l'échec de l'opération
+     */
 	@DeleteMapping("/firestation/{address}/{station}")
 	public ResponseEntity<Void> deleteFireStation(@PathVariable String address, @PathVariable int station,
 			FireStation deleteFireStation) {
@@ -114,7 +145,14 @@ public class FireStationController {
 
 	}
 
-	// URL
+	// URLs
+	
+	/**
+     * Récupère les personnes couvertes par une station de pompiers spécifique.
+     *
+     * @param stationNumber : le numéro de la station
+     * @return un objet FireStationCoverageDTO contenant les personnes et statistiques
+     */
 	@GetMapping("/firestation")
 	public ResponseEntity<FireStationCoverageDTO> getPersonsByStationNumber(@RequestParam int stationNumber) {
 		try {
@@ -129,6 +167,12 @@ public class FireStationController {
 		}
 	}
 
+	 /**
+     * Récupère les numéros de téléphone des personnes couvertes par une station de pompiers.
+     *
+     * @param firestation : le numéro de la station
+     * @return un objet FireStationCoveragePhoneNumberDTO contenant les numéros de téléphone
+     */
 	@GetMapping("/phoneAlert")
 	public ResponseEntity<FireStationCoveragePhoneNumberDTO> getPhoneNumberByStationNumber(
 			@RequestParam int firestation) {
@@ -144,6 +188,12 @@ public class FireStationController {
 		}
 	}
 
+	/**
+     * Récupère les informations des personnes vivant à une adresse donnée.
+     *
+     * @param address : l'adresse recherchée
+     * @return la liste des PersonByAddressDTO
+     */
 	@GetMapping("/fire")
 	public ResponseEntity<List<PersonByAddressDTO>> getPersonByAddress(@RequestParam String address) {
 		try {
@@ -158,6 +208,12 @@ public class FireStationController {
 		}
 	}
 
+	 /**
+     * Récupère les informations des personnes couvertes par une stations.
+     *
+     * @param firestation : le numéro de la station
+     * @return une liste de FloodListOfStationNumberDTO
+     */
 	@GetMapping("/flood/station")
 	public ResponseEntity<List<FloodListOfStationNumberDTO>> getPersonByListOfStationNumber(
 			@RequestParam int firestation) {

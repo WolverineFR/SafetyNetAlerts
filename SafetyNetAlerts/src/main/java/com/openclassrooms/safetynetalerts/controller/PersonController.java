@@ -28,6 +28,10 @@ import com.openclassrooms.safetynetalerts.service.PersonService;
 
 import jakarta.validation.Valid;
 
+
+/**
+ * Contrôleur REST pour gérer les opérations liées aux personnes.
+ */
 @RestController
 public class PersonController {
 
@@ -35,12 +39,23 @@ public class PersonController {
 	private static final Logger logger = LogManager.getLogger(PersonService.class);
 	private final ObjectMapper objectMapper;
 
+	/**
+	 * Constructeur avec injection des dépendances.
+	 *
+	 * @param personService service de gestion des personnes
+	 * @param objectMapper  outil de sérialisation JSON
+	 */
 	@Autowired
 	public PersonController(PersonService personService, ObjectMapper objectMapper) {
 		this.personService = personService;
 		this.objectMapper = objectMapper;
 	}
 
+	/**
+	 * Récupère toutes les personnes enregistrées.
+	 *
+	 * @return une réponse HTTP contenant la liste des personnes
+	 */
 	@GetMapping("/person/all")
 	public ResponseEntity<List<Person>> getAllPerson() {
 		try {
@@ -52,12 +67,18 @@ public class PersonController {
 		}
 	}
 
+	/**
+	 * Ajoute une nouvelle personne.
+	 *
+	 * @param newPerson l'objet Person à ajouter
+	 * @return une réponse HTTP contenant la personne créée
+	 */
 	@PostMapping("/person")
 	public ResponseEntity<Person> addNewPerson(@Valid @RequestBody Person newPerson) {
 		try {
 			Person addnewPerson = personService.addPerson(newPerson);
-			String PersonJson = objectMapper.writeValueAsString(addnewPerson);
-			logger.info("La personne est enregistrée avec succès ! : " + PersonJson);
+			String personJson = objectMapper.writeValueAsString(addnewPerson);
+			logger.info("La personne est enregistrée avec succès ! : " + personJson);
 			return ResponseEntity.status(HttpStatus.CREATED).body(addnewPerson);
 		} catch (PersonException e) {
 			logger.error("Erreur lors de l'ajout de la personne : {}", e.getMessage());
@@ -68,13 +89,21 @@ public class PersonController {
 		}
 	}
 
+	/**
+	 * Met à jour les informations d'une personne existante.
+	 *
+	 * @param firstName     prénom de la personne à mettre à jour
+	 * @param lastName      nom de la personne à mettre à jour
+	 * @param updatePerson  les nouvelles données de la personne
+	 * @return une réponse HTTP contenant la personne modifiée
+	 */
 	@PutMapping("/person/{firstName}/{lastName}")
 	public ResponseEntity<Person> updatePerson(@Valid @PathVariable String firstName, @PathVariable String lastName,
 			@Valid @RequestBody Person updatePerson) {
 		try {
 			Person updateP = personService.updatePerson(firstName, lastName, updatePerson);
-			String PersonJson = objectMapper.writeValueAsString(updateP);
-			logger.info("La personne a été modifiée avec succès ! : " + PersonJson);
+			String personJson = objectMapper.writeValueAsString(updateP);
+			logger.info("La personne a été modifiée avec succès ! : " + personJson);
 			return ResponseEntity.status(HttpStatus.OK).body(updateP);
 		} catch (ResourceNotFoundException e) {
 			logger.error("Erreur lors de la modification des données de la personne : {}", e.getMessage());
@@ -88,6 +117,13 @@ public class PersonController {
 		}
 	}
 
+	/**
+	 * Supprime une personne par prénom et nom.
+	 *
+	 * @param firstName prénom de la personne
+	 * @param lastName  nom de la personne
+	 * @return une réponse HTTP vide si la suppression est réussie
+	 */
 	@DeleteMapping("/person/{firstName}/{lastName}")
 	public ResponseEntity<Void> deletePerson(@Valid @PathVariable String firstName, @PathVariable String lastName) {
 		try {
@@ -103,13 +139,26 @@ public class PersonController {
 		}
 	}
 
-	// URL
+	// URLs
 
+	/**
+	 * Récupère les enfants d'une adresse donnée.
+	 *
+	 * @param address : l'adresse à rechercher
+	 * @return une liste d'enfants avec leur foyer
+	 * @throws Exception en cas d'erreur lors du traitement
+	 */
 	@GetMapping("childAlert")
 	public List<ChildByAddressDTO> getChildrenByAddress(String address) throws Exception {
 		return personService.getChildrenByAddress(address);
 	}
-
+	
+	/**
+	 * Récupère les informations détaillées des personnes portant un nom de famille donné.
+	 *
+	 * @param lastName : le nom de famille à rechercher
+	 * @return une réponse HTTP contenant une liste d'informations des personnes
+	 */
 	@GetMapping("/personInfo")
 	public ResponseEntity<List<PersonInfoLastNameDTO>> getPersonInfoByLastName(@RequestParam String lastName) {
 		try {
@@ -125,6 +174,12 @@ public class PersonController {
 		}
 	}
 
+	/**
+	 * Récupère tous les emails des personnes vivant dans une ville donnée.
+	 *
+	 * @param city : la ville ciblée
+	 * @return une réponse HTTP contenant la liste des emails
+	 */
 	@GetMapping("/communityEmail")
 	public ResponseEntity<EmailOfAllPersonDTO> getEmailOfAllPersonByCity(@RequestParam String city) {
 		try {

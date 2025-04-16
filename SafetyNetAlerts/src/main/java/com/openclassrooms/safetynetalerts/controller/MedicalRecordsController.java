@@ -23,7 +23,9 @@ import com.openclassrooms.safetynetalerts.model.MedicalRecords;
 import com.openclassrooms.safetynetalerts.service.MedicalRecordsService;
 
 import jakarta.validation.Valid;
-
+/**
+ Contrôleur REST pour la gestion des dossiers médicaux.
+**/
 @RestController
 public class MedicalRecordsController {
 
@@ -31,12 +33,25 @@ public class MedicalRecordsController {
 	private static final Logger logger = LogManager.getLogger(MedicalRecordsService.class);
 	private final ObjectMapper objectMapper;
 
+	/**
+	 * Constructeur injectant les dépendances nécessaires.
+	 *
+	 * @param medicalRecordsService : Service de gestion des dossiers médicaux.
+	 * @param objectMapper          : Outil de sérialisation JSON.
+	 */
+
 	@Autowired
 	public MedicalRecordsController(MedicalRecordsService medicalRecordsService, ObjectMapper objectMapper) {
 		this.medicalRecordsService = medicalRecordsService;
 		this.objectMapper = objectMapper;
 	}
-
+	
+	
+	/**
+	 * Récupère tous les dossiers médicaux enregistrés.
+	 *
+	 * @return une réponse HTTP contenant la liste des dossiers médicaux.
+	 */
 	@GetMapping("/medicalrecord/all")
 	public ResponseEntity<List<MedicalRecords>> getAllMedicalRecords() {
 		try {
@@ -50,6 +65,12 @@ public class MedicalRecordsController {
 		}
 	}
 
+	/**
+	 * Ajoute un nouveau dossier médical.
+	 *
+	 * @param newMedicalRecords le dossier médical à ajouter.
+	 * @return une réponse HTTP avec le dossier médical créé.
+	 */
 	@PostMapping("/medicalrecord")
 	public ResponseEntity<MedicalRecords> addNewMedicalrecord(@Valid @RequestBody MedicalRecords newMedicalRecords) {
 		try {
@@ -71,6 +92,15 @@ public class MedicalRecordsController {
 		}
 	}
 
+	/**
+	 * Met à jour un dossier médical existant selon le prénom et nom.
+	 *
+	 * @param firstName          le prénom de la personne.
+	 * @param lastName           le nom de la personne.
+	 * @param updateMedicalRecord : les nouvelles données du dossier médical.
+	 * @return une réponse HTTP contenant le dossier mis à jour.
+	 */
+	
 	@PutMapping("/medicalrecord/{firstName}/{lastName}")
 	public ResponseEntity<MedicalRecords> updateMedicalRecord(@PathVariable String firstName,
 			@PathVariable String lastName, @Valid @RequestBody MedicalRecords updateMedicalRecord) {
@@ -96,7 +126,14 @@ public class MedicalRecordsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
-
+	
+	/**
+	 * Supprime un dossier médical selon le prénom et nom.
+	 *
+	 * @param firstName le prénom de la personne.
+	 * @param lastName  le nom de la personne.
+	 * @return une réponse HTTP sans contenu si la suppression est réussie.
+	 */
 	@DeleteMapping("/medicalrecord/{firstName}/{lastName}")
 	public ResponseEntity<Void> deleteMedicalRecord(@PathVariable String firstName, @PathVariable String lastName) {
 		try {
