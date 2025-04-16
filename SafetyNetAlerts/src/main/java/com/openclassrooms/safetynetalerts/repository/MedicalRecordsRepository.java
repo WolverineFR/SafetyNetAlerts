@@ -21,18 +21,31 @@ public class MedicalRecordsRepository {
 		this.jsonService = jsonService;
 	}
 
-	// Recuperer tout les MedicalRecords
+	/**
+	 * Récupère tous les dossiers médicaux depuis le fichier JSON.
+	 *
+	 * @return une liste de MedicalRecords.
+	 */
 	public List<MedicalRecords> getAllMedicalRecords() {
 		return jsonService.readJsonFromFile(new TypeReference<List<MedicalRecords>>() {
 		}, category);
 	}
 
-	// Sauvegarder un medical record en json
+	/**
+	 * Sauvegarde la liste des dossiers médicaux dans le fichier JSON.
+	 *
+	 * @param allMedicalRecordsList : La liste à sauvegarder.
+	 */
 	public void saveMedicalRecordsToJson(List<MedicalRecords> allMedicalRecordsList) {
 		jsonService.writeJsonToFile(category, allMedicalRecordsList);
 	}
 
-	// Ajouter un MedicalRecord
+	/**
+	 * Ajoute un nouveau dossier médical et le sauvegarde.
+	 *
+	 * @param newMedicalRecords : Le dossier médical à ajouter.
+	 * @return le dossier ajouté.
+	 */
 	public MedicalRecords addMedicalRecord(MedicalRecords newMedicalRecords) {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 		allMedicalRecordsList.add(newMedicalRecords);
@@ -40,7 +53,15 @@ public class MedicalRecordsRepository {
 		return newMedicalRecords;
 	}
 
-	// Mise à jour des données
+	/**
+	 * Met à jour un dossier médical existant en fonction du prénom et du nom.
+	 *
+	 * @param firstName : Le prénom de la personne.
+	 * @param lastName : Le nom de la personne.
+	 * @param updateMedicalRecord : Les nouvelles données à mettre à jour.
+	 * @return le dossier mis à jour.
+	 * @throws ResourceNotFoundException : Si aucun dossier correspondant n’est trouvé.
+	 */
 	public MedicalRecords updateMedicalRecord(String firstName, String lastName, MedicalRecords updateMedicalRecord) {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 		boolean isUpdated = false;
@@ -63,7 +84,13 @@ public class MedicalRecordsRepository {
 		}
 	}
 
-	// Supression d'un medical record
+	/**
+	 * Supprime un dossier médical existant.
+	 *
+	 * @param deleteMedicalRecord : Le dossier à supprimer.
+	 * @return le dossier supprimé.
+	 * @throws ResourceNotFoundException : Si le dossier n'existe pas.
+	 */
 	public MedicalRecords deleteMedicalRecord(MedicalRecords deleteMedicalRecord) {
 		List<MedicalRecords> allMedicalRecordsList = getAllMedicalRecords();
 		boolean isUpdated = false;
