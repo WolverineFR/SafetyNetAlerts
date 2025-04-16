@@ -77,6 +77,51 @@ public class PersonServiceTest {
 		when(medicalRecordsService.getAllMedicalRecords()).thenReturn(List.of());
 		assertThrows(RuntimeException.class, () -> personService.addPerson(newPerson));
 	}
+	
+	@Test
+	void addPersonWithMissingLastNameTest() {
+		Person person = new Person("Jean", "", "1 rue", "Paris", "75001", "0601020304", "mail@email.com");
+
+		PersonException exception = assertThrows(PersonException.class, () -> personService.addPerson(person));
+		assertEquals("Le prénom et/ou le nom de la personne ne peuvent pas être vides.", exception.getMessage());
+	}
+
+	@Test
+	void addPersonWithMissingAddressTest() {
+		Person person = new Person("Jean", "Martin", "", "Paris", "75001", "0601020304", "mail@email.com");
+
+		PersonException exception = assertThrows(PersonException.class, () -> personService.addPerson(person));
+		assertEquals("L'adresse de la personne ne peut pas être vide.", exception.getMessage());
+	}
+
+	@Test
+	void addPersonWithMissingPhoneTest() {
+		Person person = new Person("Jean", "Martin", "1 rue", "Paris", "75001", "", "mail@email.com");
+
+		PersonException exception = assertThrows(PersonException.class, () -> personService.addPerson(person));
+		assertEquals("Le numéro de téléphone de la personne ne peut pas être vide.", exception.getMessage());
+	}
+
+	@Test
+	void addPersonWithMissingEmailTest() {
+		Person person = new Person("Jean", "Martin", "1 rue", "Paris", "75001", "0601020304", "");
+
+		PersonException exception = assertThrows(PersonException.class, () -> personService.addPerson(person));
+		assertEquals("L'email de la personne ne peut pas être vide.", exception.getMessage());
+	}
+
+	@Test
+	void addPersonWithNoFireStationCoverageTest() {
+		Person person = new Person("Jean", "Martin", "1 rue", "Paris", "75001", "0601020304", "mail@email.com");
+		MedicalRecords record = new MedicalRecords("Jean", "Martin", "01/01/1990", null, null);
+
+		when(medicalRecordsService.getAllMedicalRecords()).thenReturn(List.of(record));
+		when(fireStationRepository.getAllFireStation()).thenReturn(List.of()); // Pas de caserne
+
+		RuntimeException exception = assertThrows(RuntimeException.class, () -> personService.addPerson(person));
+		assertEquals("L'adresse de la personne n'est pas couverte par une caserne.", exception.getMessage());
+	}
+
 
 	@Test
 	void updatePersonTest() throws ResourceNotFoundException {
