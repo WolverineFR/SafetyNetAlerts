@@ -28,6 +28,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.safetynetalerts.controller.PersonController;
+import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
+import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
 import com.openclassrooms.safetynetalerts.exception.PersonException;
 import com.openclassrooms.safetynetalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.Person;
@@ -172,5 +174,95 @@ public class PersonControllerTest {
 		mockMvc.perform(delete("/person/{firstName}/{lastName}", firstName, lastName))
 				.andExpect(status().isInternalServerError());
 	}
+	
+	// URLs
+	
+	@Test
+	public void getPersonInfoByLastNameTest() throws Exception {
+		String lastName = "Martin";
+
+		PersonInfoLastNameDTO person1 = new PersonInfoLastNameDTO(
+			"Martin", "1 rue des fleurs", 30, "jean@email.com",
+			List.of("doliprane"), List.of("pollen")
+		);
+
+		PersonInfoLastNameDTO person2 = new PersonInfoLastNameDTO(
+			"Martin", "1 rue des fleurs", 25, "pierre@email.com",
+			List.of(), List.of("gluten")
+		);
+
+		List<PersonInfoLastNameDTO> personInfoList = List.of(person1, person2);
+
+		when(personService.getPersonInfoByLastName(lastName)).thenReturn(personInfoList);
+
+		mockMvc.perform(get("/personInfo").param("lastName", lastName))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()").value(2))
+			.andExpect(jsonPath("$[0].address").value("1 rue des fleurs"))
+			.andExpect(jsonPath("$[1].email").value("pierre@email.com"));
+	}
+
+
+	
+	@Test
+	public void getPersonInfoByLastNameNotFoundTest() throws Exception {
+		String lastName = "Martin";
+
+		when(personService.getPersonInfoByLastName(lastName))
+			.thenThrow(new ResourceNotFoundException("Aucune info trouvée"));
+
+		mockMvc.perform(get("/personInfo").param("lastName", lastName))
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void getPersonInfoByLastNameErrorTest() throws Exception {
+		String lastName = "Martin";
+
+		when(personService.getPersonInfoByLastName(lastName))
+			.thenThrow(new RuntimeException("Erreur inattendue"));
+
+		mockMvc.perform(get("/personInfo").param("lastName", lastName))
+			.andExpect(status().isInternalServerError());
+	}
+	
+	@Test
+	public void getEmailOfAllPersonByCityTest() throws Exception {
+		String city = "Paris";
+
+		EmailOfAllPersonDTO emailDTO = new EmailOfAllPersonDTO(List.of("jean@email.com", "pierre@email.com"));
+
+		when(personService.getEmailOfAllPersonByCity(city)).thenReturn(emailDTO);
+
+		mockMvc.perform(get("/communityEmail").param("city", city))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.email.length()").value(2))
+			.andExpect(jsonPath("$.email[0]").value("jean@email.com"))
+			.andExpect(jsonPath("$.email[1]").value("pierre@email.com"));
+	}
+
+
+	@Test
+	public void getEmailOfAllPersonByCityNotFoundTest() throws Exception {
+		String city = "Paris";
+
+		when(personService.getEmailOfAllPersonByCity(city))
+			.thenThrow(new ResourceNotFoundException("Aucun email trouvé"));
+
+		mockMvc.perform(get("/communityEmail").param("city", city))
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void getEmailOfAllPersonByCityErrorTest() throws Exception {
+		String city = "Paris";
+
+		when(personService.getEmailOfAllPersonByCity(city))
+			.thenThrow(new RuntimeException("Erreur inattendue"));
+
+		mockMvc.perform(get("/communityEmail").param("city", city))
+			.andExpect(status().isInternalServerError());
+	}
+
 
 }
