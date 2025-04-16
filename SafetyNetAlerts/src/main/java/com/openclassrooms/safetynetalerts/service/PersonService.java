@@ -18,6 +18,11 @@ import com.openclassrooms.safetynetalerts.model.Person;
 import com.openclassrooms.safetynetalerts.repository.FireStationRepository;
 import com.openclassrooms.safetynetalerts.repository.PersonRepository;
 
+/**
+ * Service qui gère les opérations sur les personnes, telles que l'ajout, la mise à jour, la suppression,
+ * et la récupération des informations détaillées de certaines personnes, en fonction de critères comme le nom
+ * ou l'adresse.
+ */
 @Service
 public class PersonService {
 
@@ -27,6 +32,13 @@ public class PersonService {
 	private final PersonRepository personRepository;
 	private final FireStationRepository fireStationRepository;
 
+	 /**
+     * Constructeur du service PersonService.
+     * 
+     * @param medicalRecordsService : Le service permettant de gérer les dossiers médicaux.
+     * @param personRepository : Le repository permettant d'accéder aux données des personnes.
+     * @param fireStationRepository : Le repository permettant d'accéder aux informations des casernes.
+     */
 	public PersonService(MedicalRecordsService medicalRecordsService, PersonRepository personRepository,
 			FireStationRepository fireStationRepository) {
 		this.medicalRecordsService = medicalRecordsService;
@@ -34,12 +46,23 @@ public class PersonService {
 		this.fireStationRepository = fireStationRepository;
 	}
 
-	// Recuperer toutes les personnes
+	/**
+     * Récupère toutes les personnes.
+     * 
+     * @return Une liste de toutes les personnes.
+     */
 	public List<Person> getAllPerson() {
 		return personRepository.getAllPerson();
 	}
 
-	// Ajouter une Personne
+	/**
+     * Ajoute une nouvelle personne après avoir validé les données.
+     * 
+     * @param newPerson : La personne à ajouter.
+     * @return La personne ajoutée.
+     * @throws PersonException : Si les informations de la personne sont invalides.
+     * @throws RuntimeException : Si aucun dossier médical n'est trouvé ou si l'adresse n'est pas couverte.
+     */
 	public Person addPerson(Person newPerson) throws PersonException {
 		if (newPerson.getFirstName() == null || newPerson.getFirstName().isBlank() || newPerson.getLastName() == null
 				|| newPerson.getLastName().isBlank()) {
@@ -78,7 +101,16 @@ public class PersonService {
 		return personRepository.addPerson(newPerson);
 	}
 
-	// Mise à jour des données
+	/**
+     * Met à jour les informations d'une personne existante.
+     * 
+     * @param firstName : Le prénom de la personne à mettre à jour.
+     * @param lastName : Le nom de la personne à mettre à jour.
+     * @param updatePerson : Les nouvelles informations de la personne.
+     * @return La personne mise à jour.
+     * @throws ResourceNotFoundException : Si aucune personne ne correspond aux critères.
+     * @throws IllegalArgumentException : Si les informations dans l'URL ne correspondent pas à celles du corps de la requête.
+     */
 	public Person updatePerson(String firstName, String lastName, Person updatePerson)
 			throws ResourceNotFoundException {
 		if (!firstName.equalsIgnoreCase(updatePerson.getFirstName())
@@ -90,7 +122,13 @@ public class PersonService {
 		return personRepository.updatePerson(firstName, lastName, updatePerson);
 	}
 
-	// Supression d'une personne
+	/**
+     * Supprime une personne.
+     * 
+     * @param firstName : Le prénom de la personne à supprimer.
+     * @param lastName : Le nom de la personne à supprimer.
+     * @throws ResourceNotFoundException : Si aucune personne ne correspond aux critères.
+     */
 	public void deletePerson(String firstName, String lastName) throws ResourceNotFoundException {
 		List<Person> allPersons = new ArrayList<>(getAllPerson());
 		boolean removed = allPersons.removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName)
@@ -103,9 +141,15 @@ public class PersonService {
 		}
 	}
 
-	/// URL
+	/// URLs
 
-	// Recuperer liste d'enfants par leurs adresse
+	 /**
+     * Récupère une liste d'enfants vivant à une adresse donnée.
+     * 
+     * @param address : L'adresse pour laquelle les enfants doivent être récupérés.
+     * @return Une liste d'objets ChildByAddressDTO contenant les informations des enfants si il y en a sinon retourne une chaine vide.
+     * @throws Exception : Si une erreur se produit lors de la récupération des données.
+     */
 	public List<ChildByAddressDTO> getChildrenByAddress(String address) throws Exception {
 		List<Person> getAllPerson = getAllPerson();
 		List<MedicalRecords> getAllMedicalRecords = medicalRecordsService.getAllMedicalRecords();
@@ -139,7 +183,14 @@ public class PersonService {
 		return filteredPersons;
 	}
 
-	// Recuperer les infos des personnes par leurs nom
+	/**
+     * Récupère les informations des personnes par leur nom de famille.
+     * 
+     * @param lastName : Le nom de famille des personnes à rechercher.
+     * @return Une liste d'objets PersonInfoLastNameDTO contenant les informations des personnes.
+     * @throws Exception : Si une erreur se produit lors de la récupération des données.
+     * @throws ResourceNotFoundException : Si aucune personne n'est trouvée avec ce nom.
+     */
 	public List<PersonInfoLastNameDTO> getPersonInfoByLastName(String lastName) throws Exception {
 		List<Person> getAllPerson = getAllPerson();
 		List<MedicalRecords> getAllMedicalRecords = medicalRecordsService.getAllMedicalRecords();
@@ -167,7 +218,14 @@ public class PersonService {
 		return filteredPersons;
 	}
 
-	// Recuperer email de chaques habitants
+	/**
+     * Récupère les adresses email de toutes les personnes d'une ville donnée.
+     * 
+     * @param city : La ville des personnes dont les emails doivent être récupérés.
+     * @return Un objet EmailOfAllPersonDTO contenant la liste des emails.
+     * @throws Exception : Si une erreur se produit lors de la récupération des données.
+     * @throws ResourceNotFoundException : Si aucune personne n'est trouvée dans la ville.
+     */
 	public EmailOfAllPersonDTO getEmailOfAllPersonByCity(String city) throws Exception {
 		List<Person> getAllPerson = getAllPerson();
 
