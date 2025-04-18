@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.openclassrooms.safetynetalerts.dto.ChildByAddressDTO;
 import com.openclassrooms.safetynetalerts.dto.EmailOfAllPersonDTO;
 import com.openclassrooms.safetynetalerts.dto.PersonInfoLastNameDTO;
+import com.openclassrooms.safetynetalerts.exception.MedicalRecordException;
 import com.openclassrooms.safetynetalerts.exception.PersonException;
 import com.openclassrooms.safetynetalerts.exception.ResourceNotFoundException;
 import com.openclassrooms.safetynetalerts.model.MedicalRecords;
@@ -90,12 +91,23 @@ public class PersonService {
 		if (!hasMedicalRecord) {
 			throw new RuntimeException("Aucun dossier médical trouvé pour cette personne.");
 		}
+	
 
 		boolean addressCovered = fireStationRepository.getAllFireStation().stream()
 				.anyMatch(fs -> fs.getAddress().equalsIgnoreCase(newPerson.getAddress()));
 
 		if (!addressCovered) {
 			throw new RuntimeException("L'adresse de la personne n'est pas couverte par une caserne.");
+		}
+		
+		List<Person> allPersons = personRepository.getAllPerson();	
+		
+		boolean alreadyExists = allPersons.stream()
+				.anyMatch(person -> person.getFirstName().equalsIgnoreCase(newPerson.getFirstName())
+						&& person.getLastName().equalsIgnoreCase(newPerson.getLastName()));
+
+		if (alreadyExists) {
+			throw new MedicalRecordException("Un dossier médical existe déjà pour cette personne.");
 		}
 
 		return personRepository.addPerson(newPerson);
