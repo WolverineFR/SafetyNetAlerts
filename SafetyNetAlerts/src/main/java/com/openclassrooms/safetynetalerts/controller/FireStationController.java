@@ -180,7 +180,7 @@ public class FireStationController {
 			FireStationCoveragePhoneNumberDTO result = fireStationService.getPhoneNumberByStationNumber(firestation);
 			return ResponseEntity.ok(result);
 		} catch (ResourceNotFoundException e) {
-			logger.error("Erreur 404 : {}", firestation);
+			logger.error("Aucune caserne n'existe pour le numéro : {}", firestation);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		} catch (Exception e) {
 			logger.error("Erreur inattendue sur /phoneAlert : {}", e.getMessage());
@@ -221,7 +221,7 @@ public class FireStationController {
 			List<FloodListOfStationNumberDTO> result = fireStationService.getPersonByListOfStationNumber(firestation);
 			return ResponseEntity.ok(result);
 		} catch (ResourceNotFoundException e) {
-			logger.error("Erreur 404 : {}", firestation);
+			logger.error("Aucune caserne n'existe pour le numéro : {}", firestation);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		} catch (Exception e) {
 			logger.error("Erreur inattendue sur /flood/station : {}", e.getMessage());
